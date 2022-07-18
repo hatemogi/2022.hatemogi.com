@@ -19,6 +19,9 @@ $endif$
   <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
   <style>
     $styles.html()$
+    h1, h2, h3, h4 {
+      font-family: sans-serif;
+    }
   </style>
 $for(css)$
   <link rel="stylesheet" href="$css$" />

@@ -5,6 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="hatemogi" />
+  <meta name="keywords" content="intro FP programmer" />
   <title>백엔드 엔지니어 김대현</title>
   <style>
     html {
@@ -216,48 +217,207 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    h1, h2, h3, h4 {
+      font-family: sans-serif;
+    }
   </style>
-  <script defer=""
-  src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css" />
 </head>
 <body>
 <header id="title-block-header">
 <h1 class="title">백엔드 엔지니어 김대현</h1>
 <p class="author">hatemogi</p>
-<p class="date">2022년 7월 15일</p>
+<p class="date">2022년 7월 18일</p>
 </header>
-<h1 id="소개">소개</h1>
-<p>안녕하세요, 백엔드 엔지니어 김대현입니다.</p>
-<h2 id="타입스크립트-예제">타입스크립트 예제</h2>
+<h2 id="소개">소개</h2>
+<p>안녕하세요. 백엔드 개발자 김대현입니다! 👋</p>
+<p>이제까지, 카카오(다음), NHN, 라인플러스에서 일했고, 현재는
+컨스택츠라는 작은 스타트업에서 Haskell이라는 함수형 프로그래밍 언어로
+백엔드 시스템을 구축하고 있습니다.</p>
+<p>제주도🏝 바닷가에서 한적하게 쉬며 커피☕️ 마시는 것을 좋아합니다.</p>
+<p><a href="https://hatemogi.medium.com">Medium</a>에 개발 관련한 글을
+적기도 하고, <a href="https://youtube.com/c/hatemogi101">YouTube</a>에도
+개발 관련 영상을 올리고 있어요.</p>
+<p>제 관심 분야를 적으면, 앞으로 공유할 글들에 대한 방향성을 가늠하시기
+좋을 것 같습니다.</p>
+<hr />
+<h2 id="함수형-프로그래밍">함수형 프로그래밍</h2>
+<p>제 관심 분야 중 가장 먼저 꼽고 싶은 것은, 함수형 프로그래밍입니다.
+현재 대부분의 주요 프로그래밍 언어는 “명령형 프로그래밍” 스타일입니다만,
+함수형 프로그래밍의 장점들이 꽤 녹아들고 있는 것 같습니다.</p>
+<h3 id="함수형-프로그래밍-언어-1-clojure">함수형 프로그래밍 언어 | (1)
+Clojure</h3>
+<p><a href="https://www.coupang.com/vp/products/35265853">‘해커와
+화가’</a>라는 책을 읽고, LISP라는 <strong>함수형 프로그래밍</strong>
+언어에 관심을 갖게 되었습니다. 그러다 JVM이 널리 쓰이는 현업 환경에서
+쓰기 좋은 <a href="https://clojure.org">클로저(Clojure)</a>를 접하게
+되었고, 그 매력적이고 강력한 언어에 빠져들었습니다. 이제껏 배운 언어 중,
+리스프 계열 언어들이 가장 우아하다 생각합니다만, 현업 환경의 다수의
+개발자들에게 리스프의 모양새는 꽤나 (충격적)이기 때문에, 규모 있는
+회사에서 적용해 쓰기에는 부담이 있어 아쉬었지요.</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> someGoodVariable<span class="op">:</span> <span class="dt">number</span> <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">abc</span>(x<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="dt">number</span> {</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> x <span class="op">*</span> <span class="dv">2</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<h2 id="하스켈-예제">하스켈 예제</h2>
+class="sourceCode clojure"><code class="sourceCode clojure"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(defroutes 라우터</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  (GET <span class="st">&quot;/&quot;</span> [] 핸들러)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  (POST <span class="st">&quot;/echo-name&quot;</span> [<span class="kw">name</span>]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">str</span> <span class="st">&quot;안녕하세요, &quot;</span> <span class="kw">name</span> <span class="st">&quot;님!&quot;</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  (GET <span class="st">&quot;/index.html&quot;</span> _</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    (html [<span class="at">:main</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>           [<span class="at">:section</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            [<span class="at">:h1</span> <span class="st">&quot;안녕하세요&quot;</span>]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            [<span class="at">:div</span> <span class="st">&quot;클로저 웹서비스 데모&quot;</span>]]]))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  (route/not-found <span class="st">&quot;찾을 수 없습니다&quot;</span>))</span></code></pre></div>
+<p>(clojure + compojure)로 이용해 HTTP 서비스를 구성한 예제입니다.
+리스프 계통 언어에 익숙하신 분들에게는 아주 자연스러운 코드일 텐데요,
+대부분의 개발자들에게는, 다른 언어에서보다 많아 보이는 괄호쌍()으로 인해
+거부감을 느끼기도 하는 것 같습니다.</p>
+<h3 id="함수형-프로그래밍-언어-2-scala">함수형 프로그래밍 언어 | (2)
+Scala</h3>
+<p>그러다가, LINE 광고개발본부에 입사했는데, 이미 본부 내 몇몇 팀에서 <a
+href="https://spark.apache.org/">스파크(Spark)</a>를 이용하며 <a
+href="https://www.scala-lang.org/">스칼라(Scala)</a> 코드베이스로 개발을
+하고 있었습니다. 이에 용기를 얻어, 제가 진행하게 된 신규 프로젝트를
+스칼라로 하겠다 보고드렸고, 공식적으로 스칼라 함수형 프로그래밍으로 현업
+서비스를 개발해 일본과 대만에 오픈했습니다.</p>
+<p>게다가 스칼라로 함수형 프로그래밍을 하려는 개발자 분들이 여럿 저희
+팀에 합류해 주셔서, 별다른 외압(?) 없이 스칼라 함수형 프로그래밍을 잘 할
+수 있게 되어 감사했습니다. 아무리 함수형 프로그래밍이 좋다한들, 충원이
+되지 않으면 무슨 소용이 있겠습니까?</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">someGoodFunc ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m <span class="dt">Int</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>soomGoodFunc <span class="ot">=</span> <span class="fu">pure</span> <span class="dv">3</span></span></code></pre></div>
-<h2 id="수식-예제">수식 예제</h2>
-<p>수식 표현 잘 되는지 확인해보겠습니다.</p>
-<p><span class="math display"> y = \frac{f(x)}{2} </span></p>
-<p>과연 잘 될까요?</p>
+class="sourceCode scala"><code class="sourceCode scala"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">trait</span> Semigroup<span class="op">[</span>A<span class="op">]</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> <span class="fu">combine</span><span class="op">(</span>x<span class="op">:</span> A<span class="op">,</span> y<span class="op">:</span> A<span class="op">):</span> A</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">trait</span> Monoid<span class="op">[</span>A<span class="op">]</span> <span class="kw">extends</span> Semigroup<span class="op">[</span>A<span class="op">]</span> <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> empty<span class="op">:</span> A</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">implicit</span> <span class="kw">val</span> intAdditionMonoid<span class="op">:</span> Monoid<span class="op">[</span><span class="bu">Int</span><span class="op">]</span> <span class="op">=</span> <span class="kw">new</span> Monoid<span class="op">[</span><span class="bu">Int</span><span class="op">]</span> <span class="op">{</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> empty<span class="op">:</span> <span class="bu">Int</span> <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> <span class="fu">combine</span><span class="op">(</span>x<span class="op">:</span> <span class="bu">Int</span><span class="op">,</span> y<span class="op">:</span> <span class="bu">Int</span><span class="op">):</span> <span class="bu">Int</span> <span class="op">=</span> x <span class="op">+</span> y</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> combineAll<span class="op">[</span>A<span class="op">:</span> Monoid<span class="op">](</span>as<span class="op">:</span> <span class="ex">List</span><span class="op">[</span>A<span class="op">]):</span> A <span class="op">=</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  as<span class="op">.</span><span class="fu">foldLeft</span><span class="op">(</span>Monoid<span class="op">[</span>A<span class="op">].</span>empty<span class="op">)(</span>Monoid<span class="op">[</span>A<span class="op">].</span>combine<span class="op">)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">combineAll</span><span class="op">(</span><span class="ex">List</span><span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">))</span> <span class="co">// res3: Int = 6</span></span></code></pre></div>
+<p>스칼라 코드의 모양을 소개하기 위해, <a
+href="https://typelevel.org/cats/typeclasses/monoid.html">Cats라는
+라이브러리의 모노이드 설명서</a>에 나와있는 예제를 가져와봤습니다.
+그래도 스칼라는, 일반적인 명령형 프로그래밍 언어와 겉모습이 비슷하기에,
+그리고 스파크라는 프레임워크 덕분에, 업무 환경에 도입해 쓰기에 부담이
+적은 것 같습니다.</p>
+<h3 id="라인개발실록-인터뷰">라인개발실록 인터뷰</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/H6JxxWL6bJI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+<p>당시 저희 팀에서 함수형 프로그래밍을 하고 있단 소식에, 인터뷰까지
+진행하게 되었습니다. 진행자 민우님이 잘 이끌어 주셔서 (제게는) 재미있는
+영상이 남았습니다. 언젠가 좀 더 본격적으로 함수형 프로그래밍을 소개하는
+영상을 남기고 싶네요.</p>
+<h2 id="함수형-프로그래밍-언어-3-haskell">함수형 프로그래밍 언어 | (3)
+Haskell</h2>
+<p>클로저와 스칼라는 함수형 프로그래밍 언어로 분류할 수 있습니다. 한편,
+함수형 프로그래밍의 끝판에는 “순수” 함수형 프로그래밍 언어인 <a
+href="https://www.haskell.org/">하스켈(haskell)</a>이 있습니다. 어떻게
+제게 이런 행운이 흘러드는지, 하스켈마저도 업무용으로 쓸 수 있게
+되었습니다. 2022년 소개를 적는 현재, 컨스택츠라는 스타트업에서 신규
+백엔드 시스템을 하스켈로 구축하고 있습니다. 아마도 국내에서 유일하게
+하스켈을 실무에 활용하는 회사가 아닐까 합니다. 그래서 저희는, 농담
+섞어서, 국내 하스켈 개발자 Top 10 중 3명이 근무 중인 회사라고 허세를
+부리고 다닙니다. 국내에 실무 하스켈 개발자가 열 명이 안될 거라는 매우
+합리적인 추측 때문에 가능한 농담이죠.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">quickSort ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>quickSort [] <span class="ot">=</span> []</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>quickSort (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  quickSort smaller <span class="op">++</span> [x] <span class="op">++</span> quickSort larger</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    (smaller, larger) <span class="ot">=</span> partition (<span class="op">&lt;=</span> x) xs</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">--- &gt;&gt;&gt; take 11 $ quickSort [1..30000000]</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- [1,2,3,4,5,6,7,8,9,10]</span></span></code></pre></div>
+<p>퀵소트 알고리즘을 구현한 하스켈 코드를 가져와봤습니다. 첫줄에 타입
+선언이 있고, 이어서, 빈 리스트와 그렇지 않은 리스트에 대한 함수 본문이
+나와있습니다. 퀵소트는 주어진 리스트에서 피벗 요소를 기준으로 작은
+요소들과 큰 요소들의 리스트로 나눠서 재귀(recursion)로 구현할 수
+있는데요, 지금 말로 설명한 부분이, 코드에 그대로 직관적으로 반영되어
+멋진 것 같습니다.</p>
+<p>하스켈은 엄격한 정적 타입 시스템을 갖춘 순수 함수형 프로그래밍
+언어입니다. 순수 함수형 언어는, 함수 내에서 부수효과를 일으킬 수 없기에,
+무언가 효과를 일으키기 위해서는 효과자체를 문맥에 담아 표현하고, 그
+문맥을 다루기 편하게 하기 위해, 수학적 이론을 바탕으로 한
+모나드(Monad)를 적극 활용합니다.</p>
+<p>하스켈에 대해서도 차차 소개할 수 있게되기를 기대해봅니다.</p>
+<hr />
+<h2 id="사이드-프로젝트">사이드 프로젝트</h2>
+<p>다음으로 꼽을만한 관심 분야는, 때때로 진행하는 사이드 프로젝트입니다.
+결과물이 공개적으로 잘 드러나는 프로젝트를 하려고, 프론트엔드 개발도
+기웃거릴 때가 있습니다. 아무래도 본업은 백엔드 개발자이기 때문에,
+프론트엔드 개발자 분들이 보시기에는, 어설픈 작업물일 가능성이
+높습니다만, 그래도 재밌게 개발하고 있습니다. 틈틈히 연습해두니까, 백엔드
+개발자로서, 간혹 필요한 웹화면을 만들기에 좋습니다. 구축한 시스템의 웹
+관리 페이지를 만들 때도 유용합니다.</p>
+<h3 id="프론트엔드-프로그래밍-1-elm">프론트엔드 프로그래밍 | (1)
+Elm</h3>
+<p>프론트엔드 개발에 좋은, <a href="https://elm-lang.org">Elm</a>이라는
+함수형 프로그래밍 언어가 있습니다. 하스켈과 마찬가지로 순수 함수형
+프로그래밍 언어이고, 언어 기능이 간략해서 배우기 쉽고, 웹에 특화돼
+있어서, 곧바로 웹 개발을 하기에 좋습니다. 아쉽게도, 쓰는 사람이 많지는
+않기 때문에, 학습 자료를 찾아보기에는 아쉬운 점이 많은 것 같습니다.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode elm"><code class="sourceCode elm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">update</span> : <span class="dt">Msg</span> <span class="op">-&gt;</span> <span class="dt">Model</span> <span class="op">-&gt;</span> ( <span class="dt">Model</span><span class="op">,</span> <span class="dt">Cmd</span> <span class="dt">Msg</span> )</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">update</span> <span class="fu">msg</span> <span class="fu">model</span> <span class="op">=</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="fu">msg</span> <span class="cf">of</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">LinkClicked</span> <span class="fu">urlRequest</span> <span class="op">-&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">case</span> <span class="fu">urlRequest</span> <span class="cf">of</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Browser</span><span class="op">.</span><span class="dt">Internal</span> <span class="fu">url</span> <span class="op">-&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                    ( <span class="fu">model</span><span class="op">,</span> <span class="dt">Nav</span><span class="op">.</span><span class="fu">pushUrl</span> <span class="fu">model</span><span class="op">.</span><span class="fu">key</span> (<span class="dt">Url</span><span class="op">.</span><span class="fu">toString</span> <span class="fu">url</span>) )</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Browser</span><span class="op">.</span><span class="dt">External</span> <span class="fu">href</span> <span class="op">-&gt;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                    ( <span class="fu">model</span><span class="op">,</span> <span class="dt">Nav</span><span class="op">.</span><span class="fu">load</span> <span class="fu">href</span> )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">UrlChanged</span> <span class="fu">url</span> <span class="op">-&gt;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            ( { <span class="fu">model</span> <span class="op">|</span> <span class="fu">url</span> <span class="op">=</span> <span class="fu">url</span><span class="op">,</span> <span class="fu">route</span> <span class="op">=</span> <span class="fu">urlToRoute</span> <span class="fu">url</span> }<span class="op">,</span> <span class="dt">Cmd</span><span class="op">.</span><span class="fu">none</span> )</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">UpdateProjectFilter</span> <span class="fu">f</span> <span class="op">-&gt;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>            ( { <span class="fu">model</span> <span class="op">|</span> <span class="fu">projectFilter</span> <span class="op">=</span> <span class="fu">f</span> }<span class="op">,</span> <span class="dt">Cmd</span><span class="op">.</span><span class="fu">none</span> )</span></code></pre></div>
+<p>제 개인 홈에 이용한 Elm코드의 일부를 가져와 보았습니다. 하스켈과
+비슷하게 타입 선언을 먼저 두고, 커링도 활용하며, 패턴 매칭으로 메시지를
+받아서 처리하는 코드입니다. 저같은 아마츄어가 프론트엔드 개발을 하려할
+때, 꽤 든든한 힘을 입어 개발할 수 있어서 좋은데요, 다른 분들의 관심은
+적은 언어라는 아쉬움이 있네요. 개인 단독 프로젝트를 진행할 때 이따금
+사용할 것 같습니다.</p>
+<h3 id="프론트엔드-프로그래밍-2-typescript">프론트엔드 프로그래밍 | (2)
+TypeScript</h3>
+<p>아마도, 제가 프론트엔드 개발을 조금 더 기웃거린다면, <a
+href="https://www.typescriptlang.org">타입스크립트(TypeScript)</a>를
+많이 활용할 것 같습니다. 이제 정적 타입 언어가 더 친숙해지기도 했고,
+타입스크립트를 활용하는 사람은, 제가 사용하는 마이너 언어들에 비해
+대단히 많기 때문에, 많은 분들과 소통하기에는 타입스크립트가 가장
+적절하지 않나 생각하고 있습니다.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">reorderFace</span>(from<span class="op">:</span> (n<span class="op">:</span> <span class="dt">number</span>) <span class="kw">=&gt;</span> <span class="dt">number</span>)<span class="op">:</span> FaceFunc {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> (face<span class="op">:</span> Face) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> target <span class="op">=</span> face<span class="op">.</span><span class="fu">slice</span>()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    face<span class="op">.</span><span class="fu">forEach</span>((x<span class="op">,</span> n) <span class="kw">=&gt;</span> target[<span class="im">from</span>(n)] <span class="op">=</span> x)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> target</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> clockwiseF <span class="op">=</span> (x<span class="op">:</span> <span class="dt">number</span>) <span class="kw">=&gt;</span> (<span class="dv">7</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">6</span>) <span class="op">%</span> <span class="dv">10</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> counterclockwiseF <span class="op">=</span> (x<span class="op">:</span> <span class="dt">number</span>) <span class="kw">=&gt;</span> (<span class="dv">3</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">2</span>) <span class="op">%</span> <span class="dv">10</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> halfTurnF <span class="op">=</span> (x<span class="op">:</span> <span class="dt">number</span>) <span class="kw">=&gt;</span> <span class="dv">8</span> <span class="op">-</span> x</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> clockwise <span class="op">=</span> <span class="fu">reorderFace</span>(clockwiseF)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> counterclockwise <span class="op">=</span> <span class="fu">reorderFace</span>(counterclockwiseF)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> halfTurn <span class="op">=</span> <span class="fu">reorderFace</span>(halfTurnF)</span></code></pre></div>
+<p>최근 작업 중인, 사이드 프로젝트의 코드 일부를 가져와 보았습니다.
+자바스크립트(JavaScript)와 거의 같은데, 중간중간 타입을 선언하는 점이 큰
+차이점입니다. 제가 쓰는 글에서 코드로 무언가를 설명해야 할 때,
+타입스크립트를 주로 써봐야겠다고 생각하고 있습니다.</p>
+<h2 id="반갑습니다">반갑습니다</h2>
+<p>이상, 함수형 프로그래밍과 사이드 프로젝트라는 두가지 관심사를
+말씀드리면서, 장황한 소개를 적어보았습니다. 글로나마 다른 개발자분들과
+서로 좋은 긍정적 힘 주고받으며 지내면 좋겠습니다.언젠가 오프라인에서
+만나면 더 반가울 것 같습니다.</p>
+<p>감사합니다.</p>
 </body>
 </html>
