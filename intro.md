@@ -3,6 +3,7 @@ title: 백엔드 엔지니어 김대현
 author: hatemogi
 date: 2022년 7월 18일
 keywords: [intro FP programmer]
+description: 안녕하세요, 함수형 프로그래밍과 사이드 프로젝트에 관심이 많은, 백엔드 개발자 김대현입니다.
 ---
 
 ## 소개
