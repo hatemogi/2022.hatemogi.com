@@ -162,7 +162,10 @@ const halfTurn = reorderFace(halfTurnF)
 
 이상, 함수형 프로그래밍과 사이드 프로젝트라는 두가지 관심사를 말씀드리면서, 장황한 소개를 적어보았습니다. 글로나마 다른 개발자분들과 서로 좋은 긍정적 힘 주고받으며 지내면 좋겠습니다.언젠가 오프라인에서 만나면 더 반가울 것 같습니다.
 
-감사합니다.
 
 
+---
 
+<a href="https://link.coupang.com/a/s8JaL" target="_blank" referrerpolicy="unsafe-url"><img src="https://image12.coupangcdn.com/image/affiliate/banner/346869365af4b3303e6792037b306c68@2x.jpg" alt="해커와 화가, 한빛미디어" width="120" height="240"></a>
+
+위 링크를 통해 "해커와 화가"를 구매하시면, 이에 따른 일정액의 수수료를 제가 받게됩니다. 감사합니다.
