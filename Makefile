@@ -6,6 +6,7 @@ all:
 	$(PANDOC) -s note/senior-dev.md -o docs/senior-dev.html
 	$(PANDOC) -s note/developer-rank.md -o docs/developer-rank.html
 	$(PANDOC) -s note/docker-spring.md -o docs/docker-spring.html
+	cp -r img/* docs/img/
 
 clean:
 	rm docs/intro.html
