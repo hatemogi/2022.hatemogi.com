@@ -125,11 +125,11 @@ import software.amazon.awssdk.services.sqs.model.*;
 
 ```java
 SqsClient buildClient() {
-		return SqsClient.builder()
-			.region(Region.AP_NORTHEAST_2)
-			.credentialsProvider(ProfileCredentialsProvider.create())
-			.build();
-	}
+  return SqsClient.builder()
+    .region(Region.AP_NORTHEAST_2)
+    .credentialsProvider(ProfileCredentialsProvider.create())
+    .build();
+}
 ```
 
 사용하고자 하는 리전을 지정하고, 적절한 자격증명 설정 방식을 선택합니다.

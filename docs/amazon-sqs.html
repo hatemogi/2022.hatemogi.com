@@ -437,11 +437,11 @@ class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="
 <h3 id="sqs-클라이언트-준비">SQS 클라이언트 준비</h3>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>SqsClient <span class="fu">buildClient</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> SqsClient<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">region</span><span class="op">(</span><span class="bu">Region</span><span class="op">.</span><span class="fu">AP_NORTHEAST_2</span><span class="op">)</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">credentialsProvider</span><span class="op">(</span>ProfileCredentialsProvider<span class="op">.</span><span class="fu">create</span><span class="op">())</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> SqsClient<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">region</span><span class="op">(</span><span class="bu">Region</span><span class="op">.</span><span class="fu">AP_NORTHEAST_2</span><span class="op">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">credentialsProvider</span><span class="op">(</span>ProfileCredentialsProvider<span class="op">.</span><span class="fu">create</span><span class="op">())</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>사용하고자 하는 리전을 지정하고, 적절한 자격증명 설정 방식을
 선택합니다.</p>
 <h3 id="큐-url-얻기">큐 URL 얻기</h3>
