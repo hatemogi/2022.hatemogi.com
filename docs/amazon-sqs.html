@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="hatemogi" />
+  <meta name="keywords" content="aws sqs message" />
+  <meta name="description" content="AWS의 Simple Queue Service를 활용해서 백엔드 컴포넌트들을 유연하고 안전하게 연결해 전체 시스템의 안정성을 높일 수 있습니다. SQS는 무엇인지 살펴보고, 간단히 자바 예제도 학습해보겠습니다." />
+  <title>마이크로서비스에 Amazon SQS 메시지 큐 활용하기</title>
+  <link rel="shortcut icon" sizes="16x16 32x32 48x48 64x64 128x128 256x256" href="/favicon.ico">
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    h1, h2, h3, h4 {
+      font-family: sans-serif;
+    }
+    .sourceCode pre {
+      padding: 0.3rem;
+      border-radius: 0.2rem;
+      background-color: #efefef;
+    }
+  </style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FE8ZDRDPP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5FE8ZDRDPP');
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">마이크로서비스에 Amazon SQS 메시지 큐 활용하기</h1>
+<p class="author">hatemogi</p>
+<p class="date">2022년 8월 1일</p>
+</header>
+<h2 id="amazon-sqs란">Amazon SQS란?</h2>
+<blockquote>
+<p>Amazon Simple Queue Service(SQS)는 마이크로 서비스, 분산 시스템 및
+서버리스 애플리케이션을 쉽게 분리하고 확장할 수 있도록 지원하는
+완전관리형 메시지 대기열 서비스입니다. SQS는 메시지 중심 미들웨어를
+관리하고 운영하는 데 따른 복잡성과 오버헤드를 없애고 개발자가 차별화
+작업에 집중할 수 있도록 지원합니다. SQS를 사용하면 메시지 손실 위험을
+감수하거나 다른 서비스를 가동할 필요 없이 소프트웨어 구성 요소 간에 모든
+볼륨의 메시지를 전송, 저장 및 수신할 수 있습니다. AWS 관리 콘솔, 명령줄
+인터페이스 또는 원하는 SDK, 3가지 간단한 명령을 사용하여 몇 분 만에
+SQS를 시작할 수 있습니다.</p>
+</blockquote>
+<p>공식 홈(<a href="https://aws.amazon.com/ko/sqs"
+class="uri">https://aws.amazon.com/ko/sqs</a>)에 있는 설명입니다. 말이
+조금 어렵게 느껴지지만, 정확하게 적혀 있습니다. 이하, 친절한 설명
+덧붙여보겠습니다.</p>
+<h2 id="메시지-큐-mq">메시지 큐 – MQ</h2>
+<p>Amazon SQS는 AWS에서 운영해주는 메시지 큐 서비스입니다. 메시지 큐
+서비스(또는 메시지 브로커)는, 소프트웨어 시스템 사이에 메시지를 주고
+받을 수 있는 믿을만한 우체국 시스템이라고 볼 수 있습니다.</p>
+<p>핸드폰 통화 연결과, 카카오톡 메시지 연결의 차이로 비유해봐도 될 것
+같습니다. 핸드폰 통화 연결은, 즉각적인 대화를 할 수 있습니다만,
+당연히도, 통화 당사자 두 명이 둘 다 깨어있고 대화에 집중해야 합니다.
+(대화에 집중 안 하는 상대도 많다는 점은 논외로 합시다) 한 명이라도 잠든
+상태라면 통화 연결이 되지 않을 테고, 대화 진행이 되지 않겠죠.</p>
+<p>카카오톡 메시지의 경우에는, 한 명이 운전 중이거나 하는 이유로 잠시
+연결이 되지 않더라도, 메시지를 보낸 사람이 메시지를 보내고 다른 일을
+하고 있을 수 있고, 받은 사람은 운전을 다 하고 나서, 메시지를 확인한 다음
+응답할 수 있습니다.</p>
+<p>마이크로서비스 사이에 메시지 전달을 이어주는 카카오톡이 메시지 큐라고
+보면 이해하기 쉬울 것 같습니다. 메시지 큐는 일반적으로 장애에 대한
+내성이 (대단히) 높고, 메시지를 안전하게 저장해서 유실되지 않게 보장해
+주곤 합니다. 일단 성공적으로 메시지를 큐에 넣었다면, (거의) 반드시
+수신자에게 전달 된다고 믿을 수 있습니다.</p>
+<h2 id="마이크로서비스끼리-직접-통신">마이크로서비스끼리 직접 통신</h2>
+<p><img src="img/sqs-direct-message.png" /></p>
+<p>백엔드 마이크로서비스 A와 B가 통신을 해야 하는 상황에, 보통의
+네트워크 통신을 한다면, 즉각적으로 결과를 확인하가며
+동기식(synchronous)으로 통신할 수 있습니다만, 대신 A나 B 둘 중 하나만
+문제 상황을 만나더라도 전체 시스템이 실패하게 되는 문제가 있습니다.</p>
+<p>위 그림에서 보자면, 마이크로서비스 B에 장애가 발생하면, 해당 메시지를
+주고받아야 했던 상황 전체가 시스템 차원에서 실패한 꼴이 됩니다.
+마이크로서비스 A는 문제없이 정상이었는데도 말이죠. A 입장에서는 억울한
+상황입니다.</p>
+<h2 id="메시지-큐를-활용한-간접-통신">메시지 큐를 활용한 간접 통신</h2>
+<p><img src="img/sqs-queue-message.png" /></p>
+<p>마이크로서비스 사이 중간에 메시지 큐 서비스를 활용해 통신하면, 메시지
+송수신 채널을 유연하게 연결할 수 있습니다. 중간에 메시지 브로커가
+<strong>안전하고 유연한 버퍼</strong> 역할을 해주어서, 메시지를 발송하는
+쪽에서는 메시지 수신부가 정상적인지 아닌지 큰 걱정 없이 메시지를 보내고
+다른 일을 할 수 있습니다.</p>
+<p>마이크로서비스 B에서 잠시 문제가 발생했다고 하더라도, 마이크로서비스
+A에서는 정상적으로 메시지를 브로커에 보낼 수 있고, B입장에서는, 다시
+정상 작동하는 시점에 메시지를 가져 올 수 있습니다. 잠깐의 장애 상황에
+대해서 대응할 수 있는 여력이 생긴 거죠.</p>
+<p>참고로, 메시지 브로커 서비스는, 다중화 구성을 기본으로 장애 걱정 없이
+믿을 만한 시스템으로 구축합니다. 브로커 시스템 일부에 장애가
+발생하더라도, 브로커 시스템 전체로 보자면 정상 작동하도록 믿을 수 있는
+높은 신뢰도를 바탕으로 운영됩니다. 각자 갖고 있는 스마트폰이 물에
+빠지거나 문제가 생길지언정, 카카오톡 서버가 메시지를 유실했다고 생각하기
+쉽지 않은 것처럼요.</p>
+<p>메시지를 보내는 쪽을 프로듀서(producer)라고 부르고, 받아서 사용하는
+쪽을 컨슈머(consumer)라고 부릅니다.</p>
+<h2 id="amazon-sqs">Amazon SQS</h2>
+<p><img src="img/sqs-banner.png" /></p>
+<p>메시지 큐시스템을 자체 운영하던 시절에는 오픈 소스 프로젝트로 <a
+href="https://www.rabbitmq.com">RabbitMQ</a>가 널리 활용됐었는데요,
+클라우드 환경으로 넘어가고, 게다가 AWS에서 책임지고 운영해주는 SQS 같은
+브로커 시스템이 등장하면서, 훨씬 더 편리해진 것 같습니다. AWS에서
+책임지고 믿을만하게 운영해주기 때문에, 우리는 브로커 운영 부담은 전혀
+없이, 각자 개발하는 시스템에서 메시지만 보내고 받아도 되게 된 거죠.</p>
+<p><img src="img/sqs-example.png" /></p>
+<p>SQS 시스템은 확장성이 매우 뛰어난 브로커 역할을 합니다. 예를들어,
+고객의 요청을 받은 ELB 로드밸런서가, 웹 서비스들로 부하를 분산 시켜주고,
+각각의 웹 서비스 인스턴스들이 각자 맘편히 SQS 큐에 메시지를 쌓고, 뒷
+단에서 메시지를 처리하는 마이크로서비스가 묵묵히 자기 일을 하는 식으로
+시스템을 구성 할 수 있겠습니다. DB값을 바꾸는 일처럼, 당장 즉각적인
+처리를 반드시 해야하는 일만 앞단에서 처리하고, 이어서 관련한 시간이
+오래걸리는 일들을 분리해서, 큐 뒷단에서 처리할 수 있겠습니다.</p>
+<h2 id="amazon-sqs의-상세-특징">Amazon SQS의 상세 특징</h2>
+<p>SQS가 메시지 브로커 시스템을 본격 활용하기에 앞서, 구체적인 특징들을
+미리 살펴보겠습니다.</p>
+<h3 id="기본-특징">기본 특징</h3>
+<ul>
+<li>각 메시지는 최대 256KB 크기입니다. S3에 메시지 본문을 담는 방식을
+추가로 지원하기 때문에, 제한없이 쓸 수도 있습니다.</li>
+<li>각 메시지는 최대 14일간 유지됩니다. 14일 이내에 메시지를
+처리(consume)해야 합니다.</li>
+</ul>
+<h3 id="두-가지-큐-종류-표준대기열-vs.-fifo-대기열">두 가지 큐 종류 –
+표준대기열 vs. FIFO 대기열</h3>
+<p>보통의 메시지 큐 시스템은, 기본적으로 최소 한번 전송(at least once
+delivery)을 약속합니다. 혹시 문제가 생기더라도, 최소한 한 번 이상
+메시지를 전송해준다는 약속인데요, 그 말은, 같은 메시지가 두 번 이상
+수신될 수도 있다는 뜻입니다. 여러번 수신 될 수도 있긴 해도, 어쨌건
+유실되지는 않는다는 약속을 지킵니다. 표준대기열은, 이 “최소 한번 전송”
+약속을 해주는 큐 시스템이고, FIFO 대기열을 선택하면, 정확히 한번(exactly
+once) 전송을 약속해 줍니다. 최소 한번 전송 방식에서, 중복 여부를
+브로커가 확인해줘서 두번째 중복 메시지부터는 버려주는 시스템인
+셈입니다.</p>
+<ul>
+<li>At least once – 최소 한 번 이상 메시지 전송을 약속</li>
+<li>Exactly once – 정확히 딱 한 번 메시지 전송되는 것을 약속 (중복
+메시지 제거해줌)</li>
+</ul>
+<p>언뜻 보면, 고민할 필요 없이 FIFO 대기열이 좋은 것 같습니다만, 세상에
+공짜는 없겠죠? FIFO 대기열 시스템은, 표준 대기열 시스템에 비해서
+확장성이 떨어지고, 비용이 약간 비쌉니다. 둘다 대단히 저렴한 수준이어서
+비용은 크게 문제가 되지 않을 것 같습니다만, 확장성에는 문제가 드러날
+수도 있겠습니다.</p>
+<p>표준 대기열 시스템은, 사실상 무한대의 처리량을 지원하고, FIFO시스템은
+초당 최대 300건의 메시지 API를 처리할 수 있습니다. 한 번의 API에 최대
+10개 메시지를 한 번에 배치 처리할 수 있기 때문에, 매초 최대 3천 건
+메시지를 처리할 수 있는 제한이 있는 셈입니다. 꽤 높은 처리량이기 때문에,
+대부분의 소규모 시스템에서는 충분하겠습니다만, 규모가 커진다면, 이
+제한이 문제가 될 수도 있겠습니다. 그리고, FIFO 시스템은, 메시지 전달
+순서도 보장됩니다. 먼저 보낸 메시지가 먼저 수신됩니다. 물론,
+수신부(consumer)가 하나여야 의미있는 얘기가 되겠지만 말이죠.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">기능</th>
+<th style="text-align: left;">표준대기열</th>
+<th style="text-align: left;">FIFO 대기열</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">메시지 보장</td>
+<td style="text-align: left;">최소 한번 (중복 수신 가능)</td>
+<td style="text-align: left;">정확히 한번</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">처리량</td>
+<td style="text-align: left;">사실상 무제한</td>
+<td style="text-align: left;">최대 3,000메시지/초</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">비용</td>
+<td style="text-align: left;">약 $0.4/백만건</td>
+<td style="text-align: left;">약 $0.5/백만건</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">순서보장</td>
+<td style="text-align: left;">순서가 바뀔 수 있다</td>
+<td style="text-align: left;">먼저 송신한 메시지가 먼저 수신된다</td>
+</tr>
+</tbody>
+</table>
+<h3 id="메시지-생명주기-lifecycle">메시지 생명주기 – lifecycle</h3>
+<ol type="1">
+<li>메시지 송신부(producer)가 SQS에 메시지A를 보냅니다.</li>
+<li>SQS는 메시지A를 사본을 만들어 여러 곳에 안전하게 보관합니다. (유실
+방지)</li>
+<li>수신부(consumer)가 SQS에서 메시지A를 처리하고자 가져갑니다.
+(inflight 상태)</li>
+<li>SQS입장에서 수신부가 메시지A를 가져갔기 때문에, 큐에 메시지가
+남아있기는 하지만, 다른 컨슈머가 메시지A를 (또) 가져가지 않도록
+일정시간동안(visibility timeout) 수신요청에 드러나지 않습니다.</li>
+<li>수신부(consumer)가 메시지를 정상 처리 완료했다면, 직접 SQS에
+메시지A를 삭제하도록 요청합니다. (완료)</li>
+<li>만약 어떤 이유로 수신부(consumer)가 메시지를 삭제하지 않는다면, 일정
+시간이 지나면, 메시지A가 다시 수신 요청에 드러납니다. (재처리 가능)</li>
+</ol>
+<ul>
+<li>visibility timeout – 기본 30초. 0초에서 12시간 사이 설정 가능.
+기본은 큐에 설정. 메시지 개별 설정도 가능.</li>
+</ul>
+<h2 id="sqs-java-예제">SQS Java 예제</h2>
+<p>AWS SDK 예제 깃헙에, SQS 관련 예제도 잘 나와있습니다.</p>
+<p><a
+href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/example_code/sqs"
+class="uri">https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/example_code/sqs</a></p>
+<h3 id="gradle-의존성-설정">Gradle 의존성 설정</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode build.gradle"><code class="sourceCode groovy"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dependencies <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ...다른 의존성 설정...</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    implementation <span class="fu">platform</span><span class="op">(</span><span class="st">&#39;software.amazon.awssdk:bom:2.15.0&#39;</span><span class="op">)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    implementation <span class="st">&#39;software.amazon.awssdk:sqs&#39;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>AWS Java SDK 중, SQS 의존성을 추가합니다.</p>
+<h3 id="기본-import">기본 import</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">software</span><span class="op">.</span><span class="im">amazon</span><span class="op">.</span><span class="im">awssdk</span><span class="op">.</span><span class="im">auth</span><span class="op">.</span><span class="im">credentials</span><span class="op">.</span><span class="im">ProfileCredentialsProvider</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">software</span><span class="op">.</span><span class="im">amazon</span><span class="op">.</span><span class="im">awssdk</span><span class="op">.</span><span class="im">regions</span><span class="op">.</span><span class="im">Region</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">software</span><span class="op">.</span><span class="im">amazon</span><span class="op">.</span><span class="im">awssdk</span><span class="op">.</span><span class="im">services</span><span class="op">.</span><span class="im">sqs</span><span class="op">.</span><span class="im">SqsClient</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">software</span><span class="op">.</span><span class="im">amazon</span><span class="op">.</span><span class="im">awssdk</span><span class="op">.</span><span class="im">services</span><span class="op">.</span><span class="im">sqs</span><span class="op">.</span><span class="im">model</span><span class="op">.*;</span></span></code></pre></div>
+<h3 id="sqs-클라이언트-준비">SQS 클라이언트 준비</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>SqsClient <span class="fu">buildClient</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> SqsClient<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">region</span><span class="op">(</span><span class="bu">Region</span><span class="op">.</span><span class="fu">AP_NORTHEAST_2</span><span class="op">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">credentialsProvider</span><span class="op">(</span>ProfileCredentialsProvider<span class="op">.</span><span class="fu">create</span><span class="op">())</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div>
+<p>사용하고자 하는 리전을 지정하고, 적절한 자격증명 설정 방식을
+선택합니다.</p>
+<h3 id="큐-url-얻기">큐 URL 얻기</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> <span class="fu">getQueueUrl</span><span class="op">(</span>SqsClient sqsClient<span class="op">,</span> <span class="bu">String</span> queueName<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    GetQueueUrlResponse getQueueUrlResponse <span class="op">=</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      sqsClient<span class="op">.</span><span class="fu">getQueueUrl</span><span class="op">(</span>GetQueueUrlRequest<span class="op">.</span><span class="fu">builder</span><span class="op">().</span><span class="fu">queueName</span><span class="op">(</span>queueName<span class="op">).</span><span class="fu">build</span><span class="op">());</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">String</span> queueUrl <span class="op">=</span> getQueueUrlResponse<span class="op">.</span><span class="fu">queueUrl</span><span class="op">();</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> queueUrl<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span>SqsException e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">System</span><span class="op">.</span><span class="fu">err</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>e<span class="op">.</span><span class="fu">awsErrorDetails</span><span class="op">().</span><span class="fu">errorMessage</span><span class="op">());</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">System</span><span class="op">.</span><span class="fu">exit</span><span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="st">&quot;&quot;</span><span class="op">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>AWS 콘솔이나, 별도 작업으로 만들어 둔 SQS 큐 이름을 기준으로, 큐 접근
+URL을 구합니다.</p>
+<h3 id="큐에-메시지-보내기">큐에 메시지 보내기</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">sendMessage</span><span class="op">(</span>SqsClient sqsClient<span class="op">,</span> <span class="bu">String</span> queueUrl<span class="op">,</span> <span class="bu">String</span> message<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  sqsClient<span class="op">.</span><span class="fu">sendMessage</span><span class="op">(</span>SendMessageRequest<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">queueUrl</span><span class="op">(</span>queueUrl<span class="op">)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">messageBody</span><span class="op">(</span>message<span class="op">)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">build</span><span class="op">());</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>메시지 송신 요청 객체를 만들어서, 큐 URL에 전송하는 코드입니다.</p>
+<h3 id="메시지-송신-produce">메시지 송신 – produce</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">produce</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  SqsClient sqsClient <span class="op">=</span> <span class="fu">buildClient</span><span class="op">();</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">String</span> queueUrl <span class="op">=</span> <span class="fu">getQueueUrl</span><span class="op">(</span>sqsClient<span class="op">,</span> <span class="st">&quot;testQueue&quot;</span><span class="op">);</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sendMessage</span><span class="op">(</span>sqsClient<span class="op">,</span> queueUrl<span class="op">,</span> <span class="st">&quot;Hello World!&quot;</span><span class="op">);</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  sqsClient<span class="op">.</span><span class="fu">close</span><span class="op">();</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>기본 흐름은, SQS클라이언트를 생성하고, 큐 URL을 구한 뒤, 메시지를
+보내고, 클라이언트를 닫으면 됩니다.</p>
+<h3 id="메시지-수신-consume">메시지 수신 – consume</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">consume</span><span class="op">(</span>SqsClient sqsClient<span class="op">,</span> <span class="bu">String</span> queueUrl<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  ReceiveMessageRequest receiveRequest <span class="op">=</span> ReceiveMessageRequest<span class="op">.</span><span class="fu">builder</span><span class="op">()</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">queueUrl</span><span class="op">(</span>queueUrl<span class="op">)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">waitTimeSeconds</span><span class="op">(</span><span class="dv">20</span><span class="op">)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ReceiveMessageResponse response <span class="op">=</span> sqsClient<span class="op">.</span><span class="fu">receiveMessage</span><span class="op">(</span>receiveRequest<span class="op">);</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">List</span><span class="op">&lt;</span>Message<span class="op">&gt;</span> messages <span class="op">=</span> response<span class="op">.</span><span class="fu">messages</span><span class="op">();</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  messages<span class="op">.</span><span class="fu">forEach</span><span class="op">(</span>m <span class="op">-&gt;</span> <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>m<span class="op">.</span><span class="fu">body</span><span class="op">())</span> <span class="op">);</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>메시지 수신(consume)도 비슷합니다만, 여기서는, 최대
+폴링(polling)타임으로 20초를 설정했습니다. 메시지 수신할 때, 한번에 최대
+10건의 메시지가 수신될 수 있기 때문에, <code>List&lt;Message&gt;</code>
+타입으로 조회했고, 각각의 메시지들에 대해서, 하고 싶은 처리를 한 다음,
+SQS 큐에서 삭제(delete)처리를 하도록 합니다.</p>
+<h2 id="다른-서비스-참고">다른 서비스 참고</h2>
+<p>Amazon SQS는, produce-consume 방식의 메시지 송수신에 활용할 수 있고,
+Amazon SNS는 Pub/Sub 방식에 활용할 수 있습니다. Amazon Kinesis의
+경우에는 스크리밍 방식으로 메시지를 송수신 할 수 있습니다. 그리고,
+Apache Kafka의 경우에도 AWS에서 관리형 서비스로 제공하고 있으니,
+요구사항에 따라서 적절한 서비스를 쓰면 되겠습니다.</p>
+<p>대부분의 경우에는, 그리고 저라면, SQS와 SNS를 조합해서 활용하는
+형태로 구성할 것 같습니다. 카프카나 키네시스까지 활용할 일은 많지 않아
+보입니다.</p>
+<h2 id="참고자료">참고자료</h2>
+<ul>
+<li>Amazon SQS – <a href="https://aws.amazon.com/ko/sqs/"
+class="uri">https://aws.amazon.com/ko/sqs/</a></li>
+<li>Amzons SQS JAVA 예제 – <a
+href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/example_code/sqs"
+class="uri">https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/example_code/sqs</a></li>
+<li>SQS, SNS 설명 영상 – <a href="https://youtu.be/UesxWuZMZqI"
+class="uri">https://youtu.be/UesxWuZMZqI</a></li>
+<li>SQS, SNS, Lambda 설명 영상 – <a href="https://youtu.be/8zysQqxgj0I"
+class="uri">https://youtu.be/8zysQqxgj0I</a></li>
+</ul>
+</body>
+</html>

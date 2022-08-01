@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="hatemogi" />
+  <meta name="keywords" content="senior junior programmer" />
+  <meta name="description" content="제목을 잘못 적은 걸까요? 시니어 개발자가 주니어에게 배운다고? 아니, 맞게 적었고, 잘 읽으셨습니다. 시니어도 주니어 개발자에게 배워야 합니다. 어떤점을 서로 배우면 좋을지 고민해봤습니다." />
+  <title>시니어 개발자가 주니어에게 배울점</title>
+  <link rel="shortcut icon" sizes="16x16 32x32 48x48 64x64 128x128 256x256" href="/favicon.ico">
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    h1, h2, h3, h4 {
+      font-family: sans-serif;
+    }
+    .sourceCode pre {
+      padding: 0.3rem;
+      border-radius: 0.2rem;
+      background-color: #efefef;
+    }
+  </style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FE8ZDRDPP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5FE8ZDRDPP');
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">시니어 개발자가 주니어에게 배울점</h1>
+<p class="author">hatemogi</p>
+<p class="date">2022년 7월 27일</p>
+</header>
+<h2 id="나보고-시니어-개발자라고">나보고 시니어 개발자라고?</h2>
+<p>한 7년차 쯤 되었을 때, 처음 시니어 개발자라고 불린 것 같습니다.
+그때는 “시니어 개발자”라는 호칭 자체가 생소했고, 심지어 조금
+불쾌하기까지 했어요. 나이도 들고 경력도 좀 되었는데, 마땅히 공식적인
+직함 같은 게 없는 상황에, 애써 우대해 불러주고 싶을 때 쓰는 호칭 정도로
+느껴졌습니다.</p>
+<p>게다가 제가 평소 생각하는 시니어 개발자는 백발머리 성성한 그런
+이미지를 떠올렸는데, 아직 30대 초반 청년(?)이었던 저한테 시니어라니?!
+당시 제 주변 동료들은 팀장이 된다거나 승진을 한다거나 하는데, 저만 아직
+말단 개발자니까, 뭔가 문제시되는 게 아닌가 하는 자격지심 같은 삐딱한
+마음이 발동했나 봅니다.</p>
+<h2 id="이젠-뭘로-보나-시니어-확정">이젠 뭘로 보나, 시니어 확정</h2>
+<p>그런데 요새는 왠지 시니어 개발자의 대우가 꽤 좋은 느낌입니다. 채용
+시장에서는 물론이고, 개발자 커뮤니티 내에서도 “시니어 개발자”라는 부류의
+사람들을 인정해주는 분위기랄까요? 이미지 자체가 좋아지니, 그렇게 불리는
+것에 대해서 느꼈던 거부감이 호감으로 바뀔 지경입니다.</p>
+<p>어쨌건, 이제 누가 저보고 “시니어 개발자”라고 말해도, 저 스스로도
+어색하지 않은 경력이 갖춰진 것 같습니다. 백발성성까지는 아니더라도,
+흰머리도 많아진 건 확실하고요. 췟!</p>
+<h2 id="시니어-개발자의-기준">시니어 개발자의 기준</h2>
+<p>주변에 “그렇다면 시니어 개발자를 판단하는 기준이 무어냐?”라고
+물어보면, 대략 주관적으로는 판단이 가능한 것 같습니다만, 경계를 확실히
+가르는 객관적 기준이 있는 것 같지는 않습니다. 각자 생각하는 기준이 다를
+수 있기에, 회색 영역이 꽤 넓게 자리잡는 것 같습니다.</p>
+<p>한편, 회사들마다 개발자 공개/비공개 레벨 제도가 있다거나, 아예
+직급이나 직함이 그 역할을 대신하는 경우도 있는 것 같습니다. 예를 들어,
+L1부터 L7까지 있는데, 대략 L4부터 시니어라고 부른다거나 하는 식인
+거죠.</p>
+<p>아니면, 아예 더 주관적으로, 주변 개발자들을 이끌 수 있는 영향력이
+있으면 시니어라고 한다거나, 아니면 본인 밥값을 충분히 하고 주변 개발자도
+도와주면 시니어라고 한다거나 하는 의견도 들었습니다.</p>
+<h2 id="경험한-회사의-위계들">경험한 회사의 위계들</h2>
+<h3 id="첫직장-사원-대리-과장-부장-임원">첫직장 | 사원, 대리, 과장,
+부장, 임원…</h3>
+<p>오래전 처음 다녔던 회사에서는 전통적인 직급 제도가 있었습니다. 사원은
+그냥 누구누구’씨’라는 호칭으로 불렀고, 대리부터 직급과 ’님’자를 붙여서
+불렀습니다. 그러니까 저보고는 “김대현씨”라고 불렀는데, 이게 뭐, 한국어
+문법적으로 따지자면 존댓말이자만, 사실상 하대죠. 그러다 대리가 되면,
+윗사람은 ’김대현 대리’라고 부르고, 사원들은 ’김대현 대리님’이라고
+부릅니다.</p>
+<p>동일 직급 내에서는 연봉 차이가 거의 없고, 다음 직급으로 승진을 하면
+연봉 인상 폭이 좀 티가 나는 점이 인상적입니다. 사실 이런 회사에서는
+주니어/시니어의 구분이 의미가 없고, 그냥 직급 자체가 위계를
+드러냅니다.</p>
+<h3 id="다음커뮤니케이션-사장도-그냥-님이다">다음커뮤니케이션 | 사장도
+그냥 님이다</h3>
+<p>Daum은 당시에는 젊은 인터넷 기업으로, 서로 호칭을 누구누구’님’이라고
+직급없이 불렀습니다. 그러니까 당시 이재웅 대표이사님 시절인데, 막 입사한
+신입사원도, 대표이사를 부를 때, “재웅님”이라고 부르는 거지요. (뭐,
+다행인 점은, 대부분 부를 일이 없습니다). 지금이야 IT 업계에서 님문화나
+영어 호칭 문화가 꽤 일반적인 것 같습니다만, 당시에는 나름
+파격이었죠.</p>
+<p>호칭 자체는 ’님’으로 통일되긴 했는데, 대신 직함이 붙습니다.
+TFT장이나, 팀장이라거나, 본부장이라거나 유닛장이라거나 하는 식으로요.
+그래도 사내에서 서로 부를 때는 ’님’자로 끝입니다. 제가 팀장이라고
+하더라도, 저희 팀원들은 저를 ’대현님’이라고 부릅니다. 타이틀 중에 뭐
+’개발리더’라는 이상한 것도 해보았는데, 뭐 별 차이점은
+모르겠었습니다.</p>
+<p>암튼, 다음에서 오래근무를 하다보니, 명함에는 회사에 있는 흔한 직급이
+없어서, 어색한 점도 없지는 않았습니다. 예를들면, 주위 어르신들은, “아니
+왜 10년이나 다녔는데 아직도 사원이냐? 우리 대현이 승진을 못해서 어떻게
+하냐?” 이런 걱정을 해주시는 거죠. “저희 회사는 직급 제도가 없이 다
+님으로 부릅니다”라고 말씀드리면, “회사가 무슨 동호회냐? 님으로
+부르게?”라고 생각하시는 경우도 없지는 많았을 겁니다.</p>
+<h2 id="주니어-개발자">주니어 개발자</h2>
+<p><img src="img/junior-developers.jpeg" /></p>
+</body>
+</html>
