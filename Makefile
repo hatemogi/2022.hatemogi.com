@@ -7,6 +7,7 @@ all:
 	$(PANDOC) -s note/developer-rank.md -o docs/developer-rank.html
 	$(PANDOC) -s note/docker-spring.md -o docs/docker-spring.html
 	$(PANDOC) -s note/amazon-sqs.md -o docs/amazon-sqs.html
+	$(PANDOC) -s note/amazon-eks.md -o docs/amazon-eks.html
 	cp -r img/* docs/img/
 
 clean:
@@ -16,3 +17,4 @@ clean:
 	rm docs/developer-rank.html
 	rm docs/docker-spring.html
 	rm docs/amazon-sqs.html
+	rm docs/amazon-eks.html

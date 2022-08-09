@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="hatemogi" />
+  <meta name="keywords" content="aws eks kubernetes k8s" />
+  <meta name="description" content="AWS의 쿠버네티스 관리형 서비스 EKS에 대해 살펴보고, 간단히 서비스를 배포해보겠습니다." />
+  <title>AWS 쿠버네티스 관리형 서비스, EKS 시작하기</title>
+  <link rel="shortcut icon" sizes="16x16 32x32 48x48 64x64 128x128 256x256" href="/favicon.ico">
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    h1, h2, h3, h4 {
+      font-family: sans-serif;
+    }
+    .sourceCode pre {
+      padding: 0.3rem;
+      border-radius: 0.2rem;
+      background-color: #efefef;
+    }
+  </style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FE8ZDRDPP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5FE8ZDRDPP');
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">AWS 쿠버네티스 관리형 서비스, EKS 시작하기</h1>
+<p class="author">hatemogi</p>
+<p class="date">2022년 8월 8일</p>
+</header>
+<h2 id="쿠버네티스-kubernetes">쿠버네티스 – Kubernetes</h2>
+<p><a href="https://note.hatemogi.com/docker-spring.html">지난
+글</a>에서 만든 나만의 도커 애플리케이션을, 서비스 용도로 운영하려면,
+어딘가에 컨테이너를 실행해야할 텐데요, Amazon EKS라는 쿠버네티스 환경에
+실행해보려 합니다.</p>
+<p>쿠버네티스는 프러덕션 용도로 쓸 수 있는 컨테이너들을 총체적으로
+관리하는 툴입니다. 원래 구글에서 운영하던 컨테이너 운영 관리
+플랫폼이었는데, 후에 오픈소스 프로젝트로 공개하고, 여러 회사들이
+참여하면서, 이제는 마치 클라우드 환경의 산업 표준처럼 자리잡은 것
+같습니다. 구글의 GCP 클라우드는 물론이고, 아마존 AWS 환경에서도 EKS라는
+이름의 서비스를 통해 쿠버네티스 환경을 활용할 수 있습니다.</p>
+<p>쿠버네티스를 활용하면, 프러덕션 환경에서 서비스를 운영할 때 필요로
+하는 복잡한 일들을, 쉽게 진행할 수 있습니다. 서비스를 업데이트할 때,
+기존 서비스가 운영되는 상황에서 새 버전의 서비스를 교체하며 업데이트하는
+<strong>롤링 업데이트</strong>나, 서비스 부하 상황에 따라 시스템 자원을
+늘리거나 줄이는 <strong>오토스케일링</strong>, 시스템 부하를 골고루
+나눠주는 <strong>로드 밸런싱</strong>같은 기능들을 쿠버네티스를 통해서
+통합 관리할 수 있습니다.</p>
+<h3 id="기본-용어">기본 용어</h3>
+<ul>
+<li>쿠버네티스 – <a href="https://kubernetes.io/"
+class="uri">https://kubernetes.io/</a></li>
+</ul>
+<p>다양하게 중요한 기능을 제공하니만큼, 워낙 알아야 할 내용도 많습니다.
+자세히 공부하고 알아야 할 것들이 많지만, 일단은 요약판으로 몇가지 용어만
+거칠게 알고 넘어가보겠습니다.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">용어</th>
+<th style="text-align: left;">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">파드(Pod)</td>
+<td style="text-align: left;">쿠베 환경에서 만들고 관리할 수 있는 배포
+최소 단위. 하나 이상의 컨테이너 묶음.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">노드(Node)</td>
+<td style="text-align: left;">파드들이 실행되는 환경. 물리머신 또는
+가상머신. 한 클러스터에 여러 노드 운영</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">서비스(Service)</td>
+<td style="text-align: left;">여러 (동일 구성) 파드를 묶어서
+대표역할</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">레플리카세트(ReplicaSet)</td>
+<td style="text-align: left;">정상적인 동일(복제) 파드들을 실행하도록
+유지.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">디플로이먼트(Deployment)</td>
+<td style="text-align: left;">파드(pod)나 레플리카세트(ReplicaSet)를
+어떤 상태로 둘지 선언해 두는 것.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="amazon-eks">Amazon EKS</h2>
+<p>Amazon EKS는 AWS가 관리 운영해주는 쿠버네티스(Kubernetes)
+서비스입니다. 내가 직접 쿠버네티스 환경을 구축하지 않고도, 쿠버네티스
+환경이 제공하는 강력한 기능들을 간편하게 이용할 수 있습니다.</p>
+<p>AWS의 EKS 시작하기 문서에 보면, 아래 두가지 방식으로 설명이 나와
+있습니다.</p>
+<ul>
+<li>eksctl 써서 시작하기 - <a
+href="https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html"
+class="uri">https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html</a></li>
+<li>AWS 관리 콘솔로 시작하기 - <a
+href="https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html"
+class="uri">https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html</a></li>
+</ul>
+<p>여기서는 <code>eksctl</code>이라는 CLI 툴을 써서 진행하였습니다. aws
+CLI툴로 자격증명(credential)도 잘 설정해 놓고 나면, eksctl에서도 해당
+권한으로 EKS관련 작업을 진행할 수 있습니다.</p>
+<h3 id="awscli-eksctl-kubectl-설치">awscli, eksctl, kubectl 설치</h3>
+<p>홈브루(homebrew)를 사용 중이라면, 아래 명령어로 쉽게 설치할 수
+있습니다.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> brew install awscli eksctl kubectl</span></code></pre></div>
+<p>aws CLI 툴을 쓰고 있었다면, 이미 설정한 상태이겠지만, 아직 하지
+않았다면, <code>aws configure</code> 명령어를 이용해서,
+자격증명(credential)정보를 입력하고 진행합시다.</p>
+<h3 id="첫-eks-클러스터-만들기">첫 EKS 클러스터 만들기</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> eksctl <span class="ex">create</span> cluster <span class="at">--name</span> my-cluster <span class="at">--region</span> ap-northeast-2 <span class="at">--fargate</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:18:33 [ℹ]  eksctl version 0.107.0-dev+b204c3ce.2022-07-29T12:46:37Z</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:18:33 [ℹ]  using region ap-northeast-2</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:18:33 [ℹ]  setting availability zones to [ap-northeast-2c ap-northeast-2b ap-northeast-2a]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:36:26 [✔]  all EKS cluster resources for <span class="st">&quot;my-cluster&quot;</span> have been created</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:36:27 [ℹ]  kubectl command should work with <span class="st">&quot;/Users/dante/.kube/config&quot;</span>, try <span class="st">&#39;kubectl get nodes&#39;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:36:27 [✔]  EKS cluster <span class="st">&quot;my-cluster&quot;</span> in <span class="st">&quot;ap-northeast-2&quot;</span> region is ready</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span></span></code></pre></div>
+<p>제 AWS계정에서 서울리전에 연습용 쿠버네티스 클러스터를
+만들어보았습니다. 상황에 따라 다르겠지만, 약 20분 정도 기다리니,
+<code>my-cluster</code>가 만들어졌습니다.</p>
+<h3 id="eks-클러스터-노드-조회">EKS 클러스터 노드 조회</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> kubectl <span class="ex">get</span> nodes <span class="at">-o</span> wide</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                                                         STATUS   ROLES    AGE   VERSION               INTERNAL-IP       EXTERNAL-IP   OS-IMAGE         KERNEL-VERSION                  CONTAINER-RUNTIME</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">fargate-ip-192-168-130-228.ap-northeast-2.compute.internal</span>   Ready    <span class="op">&lt;</span>none<span class="op">&gt;</span>   19m   v1.22.6-eks-14c7a48   192.168.130.228   <span class="op">&lt;</span>none<span class="op">&gt;</span>        Amazon Linux 2   4.14.281-212.502.amzn2.x86_64   containerd://1.4.13</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">fargate-ip-192-168-96-24.ap-northeast-2.compute.internal</span>     Ready    <span class="op">&lt;</span>none<span class="op">&gt;</span>   19m   v1.22.6-eks-14c7a48   192.168.96.24     <span class="op">&lt;</span>none<span class="op">&gt;</span>        Amazon Linux 2   4.14.281-212.502.amzn2.x86_64   containerd://1.4.13</span></code></pre></div>
+<h3 id="eks-클러스터-삭제-방법">EKS 클러스터 삭제 방법</h3>
+<p>이하 모든 예제를 다 다루고나면 아래의 명령어로, 클러스터를 꼭
+삭제하도록 합니다.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl delete cluster <span class="at">--name</span> my-cluster <span class="at">--region</span> ap-northeast-2</span></code></pre></div>
+<h3 id="iam-권한-설정">IAM 권한 설정</h3>
+<blockquote>
+<p>IAM root 이용자 말고, 이번 연습 용도로 별도의 계정을 생성해서 (예를
+들면 eks_test같은 이름으로), 진행합시다.</p>
+</blockquote>
+<h3 id="연결역할-생성">연결역할 생성</h3>
+<ul>
+<li><a
+href="https://docs.aws.amazon.com/eks/latest/userguide/connector_IAM_role.html"
+class="uri">https://docs.aws.amazon.com/eks/latest/userguide/connector_IAM_role.html</a></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">eksctl</span> create iamidentitymapping <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--cluster</span> my-cluster <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--region</span><span class="op">=</span>ap-northeast-2 <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--arn</span> arn:aws:iam::{ACCEESS_ID}:role/my-console-viewer-role <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--group</span> eks-console-dashboard-full-access-group <span class="dt">\</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-duplicate-arns</span></span></code></pre></div>
+<h3 id="연결-이용자-생성">연결 이용자 생성</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">eksctl</span> create iamidentitymapping <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--cluster</span> my-cluster <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--region</span><span class="op">=</span>ap-northeast-2 <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--arn</span> arn:aws:iam::{ACCESS_ID}:user/eks-user <span class="dt">\</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--group</span> eks-console-dashboard-restricted-access-group <span class="dt">\</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-duplicate-arns</span></span></code></pre></div>
+<h2 id="예제-애플리케이션-배포">예제 애플리케이션 배포</h2>
+<ul>
+<li>Sample application deployment – <a
+href="https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html"
+class="uri">https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html</a></li>
+</ul>
+<h3 id="eks-이름-공간-생성">EKS 이름 공간 생성</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eks kubectl create namespace eks-sample-app</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">namespace/eks-sample-app</span> created</span></code></pre></div>
+<h3 id="fargate-프로필-생성">Fargate 프로필 생성</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl create fargateprofile <span class="dt">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cluster</span> my-cluster <span class="dt">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> my-fargate-profile <span class="dt">\</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--namespace</span> eks-sample-app</span></code></pre></div>
+<h3 id="샘플-디플로이먼트-적용">샘플 디플로이먼트 적용</h3>
+<h4 id="eks-sample-deployment.yaml">eks-sample-deployment.yaml</h4>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> eks-sample-linux-deployment</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> eks-sample-app</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> eks-sample-linux-app</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> eks-sample-linux-app</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> eks-sample-linux-app</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">affinity</span><span class="kw">:</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">nodeAffinity</span><span class="kw">:</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">requiredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">nodeSelectorTerms</span><span class="kw">:</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> kubernetes.io/arch</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="kw">-</span><span class="at"> amd64</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="kw">-</span><span class="at"> arm64</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> public.ecr.aws/nginx/nginx:1.21</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> http</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">imagePullPolicy</span><span class="kw">:</span><span class="at"> IfNotPresent</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">nodeSelector</span><span class="kw">:</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">kubernetes.io/os</span><span class="kw">:</span><span class="at"> linux</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eks kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/eks-sample-linux-deployment</span> created</span></code></pre></div>
+<h3 id="샘플-서비스-적용">샘플 서비스 적용</h3>
+<h4 id="eks-sample-service.yaml">eks-sample-service.yaml</h4>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> eks-sample-linux-service</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> eks-sample-app</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> eks-sample-linux-app</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> eks-sample-linux-app</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> TCP</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eks kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/eks-sample-linux-deployment</span> created</span></code></pre></div>
+<h3 id="현재-리소스-상태-확인">현재 리소스 상태 확인</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get all <span class="at">-n</span> eks-sample-app</span></code></pre></div>
+<h3 id="서비스-상세-조회">서비스 상세 조회</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl <span class="at">-n</span> eks-sample-app describe service eks-sample-linux-service</span></code></pre></div>
+<h3 id="특정-파드pod에-연결해보자">특정 파드(pod)에 연결해보자</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl exec <span class="at">-it</span> eks-sample-linux-deployment-65b7669776-lrtww <span class="at">-n</span> eks-sample-app <span class="at">--</span> /bin/bash</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">root@eks-sample-linux-deployment-65b7669776-lrtww:/#</span> curl http://eks-sample-linux-service</span></code></pre></div>
+<h2 id="부하분산-다음시간">부하분산 (다음시간)</h2>
+<ul>
+<li>기능 비교 – <a
+href="https://aws.amazon.com/ko/elasticloadbalancing/features/"
+class="uri">https://aws.amazon.com/ko/elasticloadbalancing/features/</a></li>
+</ul>
+<h3 id="네트워크-부하-분산-network-load-balancing">네트워크 부하 분산 –
+Network Load Balancing</h3>
+<p><a
+href="https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html"
+class="uri">https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html</a></p>
+<h3 id="애플리케이션-부하-부산-application-load-balancing">애플리케이션
+부하 부산 – Application Load Balancing</h3>
+<p><a
+href="https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html"
+class="uri">https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html</a></p>
+<h2 id="오토스케일러-autoscaler-다음-시간">오토스케일러 Autoscaler (다음
+시간)</h2>
+<p>수직 오토스케일러(Vertical Pod Autoscaler)와 수평
+오토스케일러(Horizontal Pod Autoscaler) 두가지 방식이 있습니다. 다음
+시간에 알아보겠습니다.</p>
+<h2 id="남은-작업">남은 작업</h2>
+<ul>
+<li>ECR - 도커이미지 저장소에 푸시하기</li>
+<li>오토스케일링 설정</li>
+</ul>
+</body>
+</html>
