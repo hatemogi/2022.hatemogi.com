@@ -52,7 +52,7 @@ aws CLI 툴을 쓰고 있었다면, 이미 설정한 상태이겠지만, 아직 
 ### 첫 EKS 클러스터 만들기
 
 ```bash
-> eksctl create cluster --name my-cluster --region ap-northeast-2 --fargate
+$ eksctl create cluster --name my-cluster --region ap-northeast-2 --fargate
 2022-08-08 11:18:33 [ℹ]  eksctl version 0.107.0-dev+b204c3ce.2022-07-29T12:46:37Z
 2022-08-08 11:18:33 [ℹ]  using region ap-northeast-2
 2022-08-08 11:18:33 [ℹ]  setting availability zones to [ap-northeast-2c ap-northeast-2b ap-northeast-2a]
@@ -60,7 +60,7 @@ aws CLI 툴을 쓰고 있었다면, 이미 설정한 상태이겠지만, 아직 
 2022-08-08 11:36:26 [✔]  all EKS cluster resources for "my-cluster" have been created
 2022-08-08 11:36:27 [ℹ]  kubectl command should work with "/Users/dante/.kube/config", try 'kubectl get nodes'
 2022-08-08 11:36:27 [✔]  EKS cluster "my-cluster" in "ap-northeast-2" region is ready
->
+$
 ```
 
 제 AWS계정에서 서울리전에 연습용 쿠버네티스 클러스터를 만들어보았습니다. 상황에 따라 다르겠지만, 약 20분 정도 기다리니, `my-cluster`가 만들어졌습니다.
@@ -68,7 +68,7 @@ aws CLI 툴을 쓰고 있었다면, 이미 설정한 상태이겠지만, 아직 
 ### EKS 클러스터 노드 조회
 
 ```bash
-> kubectl get nodes -o wide
+$ kubectl get nodes -o wide
 NAME                                                         STATUS   ROLES    AGE   VERSION               INTERNAL-IP       EXTERNAL-IP   OS-IMAGE         KERNEL-VERSION                  CONTAINER-RUNTIME
 fargate-ip-192-168-130-228.ap-northeast-2.compute.internal   Ready    <none>   19m   v1.22.6-eks-14c7a48   192.168.130.228   <none>        Amazon Linux 2   4.14.281-212.502.amzn2.x86_64   containerd://1.4.13
 fargate-ip-192-168-96-24.ap-northeast-2.compute.internal     Ready    <none>   19m   v1.22.6-eks-14c7a48   192.168.96.24     <none>        Amazon Linux 2   4.14.281-212.502.amzn2.x86_64   containerd://1.4.13
@@ -91,7 +91,7 @@ $ eksctl delete cluster --name my-cluster --region ap-northeast-2
 * <https://docs.aws.amazon.com/eks/latest/userguide/connector_IAM_role.html>
 
 ```bash
-eksctl create iamidentitymapping \
+$ eksctl create iamidentitymapping \
     --cluster my-cluster \
     --region=ap-northeast-2 \
     --arn arn:aws:iam::{ACCEESS_ID}:role/my-console-viewer-role \
@@ -102,7 +102,7 @@ eksctl create iamidentitymapping \
 ### 연결 이용자 생성
 
 ```bash
-eksctl create iamidentitymapping \
+$ eksctl create iamidentitymapping \
     --cluster my-cluster \
     --region=ap-northeast-2 \
     --arn arn:aws:iam::{ACCESS_ID}:user/eks-user \
@@ -117,7 +117,7 @@ eksctl create iamidentitymapping \
 ### EKS 이름 공간 생성
 
 ```bash
-$ eks kubectl create namespace eks-sample-app
+$ kubectl create namespace eks-sample-app
 namespace/eks-sample-app created
 ```
 
@@ -174,7 +174,7 @@ spec:
 ```
 
 ```bash
-$ eks kubectl apply -f eks-sample-deployment.yaml
+$ kubectl apply -f eks-sample-deployment.yaml
 deployment.apps/eks-sample-linux-deployment created
 ```
 
@@ -201,7 +201,7 @@ spec:
 
 
 ```bash
-$ eks kubectl apply -f eks-sample-deployment.yaml
+$ kubectl apply -f eks-sample-deployment.yaml
 deployment.apps/eks-sample-linux-deployment created
 ```
 

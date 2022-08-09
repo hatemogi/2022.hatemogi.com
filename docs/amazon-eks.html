@@ -336,7 +336,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 자격증명(credential)정보를 입력하고 진행합시다.</p>
 <h3 id="첫-eks-클러스터-만들기">첫 EKS 클러스터 만들기</h3>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> eksctl <span class="ex">create</span> cluster <span class="at">--name</span> my-cluster <span class="at">--region</span> ap-northeast-2 <span class="at">--fargate</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl create cluster <span class="at">--name</span> my-cluster <span class="at">--region</span> ap-northeast-2 <span class="at">--fargate</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:18:33 [ℹ]  eksctl version 0.107.0-dev+b204c3ce.2022-07-29T12:46:37Z</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:18:33 [ℹ]  using region ap-northeast-2</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:18:33 [ℹ]  setting availability zones to [ap-northeast-2c ap-northeast-2b ap-northeast-2a]</span>
@@ -344,13 +344,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:36:26 [✔]  all EKS cluster resources for <span class="st">&quot;my-cluster&quot;</span> have been created</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:36:27 [ℹ]  kubectl command should work with <span class="st">&quot;/Users/dante/.kube/config&quot;</span>, try <span class="st">&#39;kubectl get nodes&#39;</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">2022-08-08</span> 11:36:27 [✔]  EKS cluster <span class="st">&quot;my-cluster&quot;</span> in <span class="st">&quot;ap-northeast-2&quot;</span> region is ready</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span></span></code></pre></div>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span></span></code></pre></div>
 <p>제 AWS계정에서 서울리전에 연습용 쿠버네티스 클러스터를
 만들어보았습니다. 상황에 따라 다르겠지만, 약 20분 정도 기다리니,
 <code>my-cluster</code>가 만들어졌습니다.</p>
 <h3 id="eks-클러스터-노드-조회">EKS 클러스터 노드 조회</h3>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> kubectl <span class="ex">get</span> nodes <span class="at">-o</span> wide</span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get nodes <span class="at">-o</span> wide</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                                                         STATUS   ROLES    AGE   VERSION               INTERNAL-IP       EXTERNAL-IP   OS-IMAGE         KERNEL-VERSION                  CONTAINER-RUNTIME</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">fargate-ip-192-168-130-228.ap-northeast-2.compute.internal</span>   Ready    <span class="op">&lt;</span>none<span class="op">&gt;</span>   19m   v1.22.6-eks-14c7a48   192.168.130.228   <span class="op">&lt;</span>none<span class="op">&gt;</span>        Amazon Linux 2   4.14.281-212.502.amzn2.x86_64   containerd://1.4.13</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">fargate-ip-192-168-96-24.ap-northeast-2.compute.internal</span>     Ready    <span class="op">&lt;</span>none<span class="op">&gt;</span>   19m   v1.22.6-eks-14c7a48   192.168.96.24     <span class="op">&lt;</span>none<span class="op">&gt;</span>        Amazon Linux 2   4.14.281-212.502.amzn2.x86_64   containerd://1.4.13</span></code></pre></div>
@@ -371,7 +371,7 @@ href="https://docs.aws.amazon.com/eks/latest/userguide/connector_IAM_role.html"
 class="uri">https://docs.aws.amazon.com/eks/latest/userguide/connector_IAM_role.html</a></li>
 </ul>
 <div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">eksctl</span> create iamidentitymapping <span class="dt">\</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl create iamidentitymapping <span class="dt">\</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--cluster</span> my-cluster <span class="dt">\</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--region</span><span class="op">=</span>ap-northeast-2 <span class="dt">\</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--arn</span> arn:aws:iam::{ACCEESS_ID}:role/my-console-viewer-role <span class="dt">\</span></span>
@@ -379,7 +379,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">--no-duplicate-arns</span></span></code></pre></div>
 <h3 id="연결-이용자-생성">연결 이용자 생성</h3>
 <div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">eksctl</span> create iamidentitymapping <span class="dt">\</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl create iamidentitymapping <span class="dt">\</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--cluster</span> my-cluster <span class="dt">\</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--region</span><span class="op">=</span>ap-northeast-2 <span class="dt">\</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--arn</span> arn:aws:iam::{ACCESS_ID}:user/eks-user <span class="dt">\</span></span>
@@ -393,7 +393,7 @@ class="uri">https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.h
 </ul>
 <h3 id="eks-이름-공간-생성">EKS 이름 공간 생성</h3>
 <div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eks kubectl create namespace eks-sample-app</span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl create namespace eks-sample-app</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">namespace/eks-sample-app</span> created</span></code></pre></div>
 <h3 id="fargate-프로필-생성">Fargate 프로필 생성</h3>
 <div class="sourceCode" id="cb8"><pre
@@ -441,7 +441,7 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="
 <span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">nodeSelector</span><span class="kw">:</span></span>
 <span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">kubernetes.io/os</span><span class="kw">:</span><span class="at"> linux</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eks kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/eks-sample-linux-deployment</span> created</span></code></pre></div>
 <h3 id="샘플-서비스-적용">샘플 서비스 적용</h3>
 <h4 id="eks-sample-service.yaml">eks-sample-service.yaml</h4>
@@ -461,7 +461,7 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href=
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eks kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/eks-sample-linux-deployment</span> created</span></code></pre></div>
 <h3 id="현재-리소스-상태-확인">현재 리소스 상태 확인</h3>
 <div class="sourceCode" id="cb13"><pre
