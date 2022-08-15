@@ -1,5 +1,5 @@
 ---
-title: AWS 쿠버네티스 관리형 서비스, EKS 시작하기
+title: AWS 쿠버네티스 관리형 서비스, EKS 시작하기 (1)
 author: hatemogi
 date: 2022년 8월 8일
 keywords: [aws eks kubernetes k8s]
@@ -225,24 +225,15 @@ root@eks-sample-linux-deployment-65b7669776-lrtww:/# curl http://eks-sample-linu
 ```
 
 
-## 부하분산 (다음시간)
+### EKS 클러스터 삭제
 
-* 기능 비교 -- <https://aws.amazon.com/ko/elasticloadbalancing/features/>
+```bash
+$ eksctl delete cluster --name my-cluster --region ap-northeast-2
+```
 
-### 네트워크 부하 분산 -- Network Load Balancing
-
-<https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html>
-
-### 애플리케이션 부하 부산 -- Application Load Balancing
-
-<https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html>
-
-## 오토스케일러 Autoscaler (다음 시간)
-
-수직 오토스케일러(Vertical Pod Autoscaler)와 수평 오토스케일러(Horizontal Pod Autoscaler) 두가지 방식이 있습니다. 다음 시간에 알아보겠습니다.
+쿠버네티스 클러스터 이용요금이 지속적으로 부과되지 않도록, 반드시 연습이 끝난 클러스터를 삭제하도록 합시다.
 
 
-## 남은 작업
+## 다음 시간에는
 
-* ECR - 도커이미지 저장소에 푸시하기
-* 오토스케일링 설정
+다음 편에서는, 쿠버네티스 클러스터에 기동한 서비스에 부하를 분산시키는 방법과 오토스케일링에 대해 알아보겠습니다.
