@@ -461,8 +461,8 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href=
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl apply <span class="at">-f</span> eks-sample-deployment.yaml</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/eks-sample-linux-deployment</span> created</span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl apply <span class="at">-f</span> eks-sample-service.yaml</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/eks-sample-linux-service</span> created</span></code></pre></div>
 <h3 id="현재-리소스-상태-확인">현재 리소스 상태 확인</h3>
 <div class="sourceCode" id="cb13"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get all <span class="at">-n</span> eks-sample-app</span></code></pre></div>
@@ -476,8 +476,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href=
 <h3 id="eks-클러스터-삭제">EKS 클러스터 삭제</h3>
 <div class="sourceCode" id="cb16"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl delete cluster <span class="at">--name</span> my-cluster <span class="at">--region</span> ap-northeast-2</span></code></pre></div>
-<p>쿠버네티스 클러스터 이용요금이 지속적으로 부과되지 않도록, 반드시
-연습이 끝난 클러스터를 삭제하도록 합시다.</p>
+<p>쿠버네티스 클러스터 이용요금이 지속적으로 부과되지 않도록, 연습이
+끝난 클러스터를 꼭 삭제하도록 합시다.</p>
 <h2 id="다음-시간에는">다음 시간에는</h2>
 <p>다음 편에서는, 쿠버네티스 클러스터에 기동한 서비스에 부하를
 분산시키는 방법과 오토스케일링에 대해 알아보겠습니다.</p>

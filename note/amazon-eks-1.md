@@ -201,8 +201,8 @@ spec:
 
 
 ```bash
-$ kubectl apply -f eks-sample-deployment.yaml
-deployment.apps/eks-sample-linux-deployment created
+$ kubectl apply -f eks-sample-service.yaml
+deployment.apps/eks-sample-linux-service created
 ```
 
 ### 현재 리소스 상태 확인
@@ -231,7 +231,7 @@ root@eks-sample-linux-deployment-65b7669776-lrtww:/# curl http://eks-sample-linu
 $ eksctl delete cluster --name my-cluster --region ap-northeast-2
 ```
 
-쿠버네티스 클러스터 이용요금이 지속적으로 부과되지 않도록, 반드시 연습이 끝난 클러스터를 삭제하도록 합시다.
+쿠버네티스 클러스터 이용요금이 지속적으로 부과되지 않도록, 연습이 끝난 클러스터를 꼭 삭제하도록 합시다.
 
 
 ## 다음 시간에는
