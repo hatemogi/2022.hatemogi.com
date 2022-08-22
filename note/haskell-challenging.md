@@ -1,5 +1,5 @@
 ---
-title: 프로 하스켈러 4개월차. 하스켈의 단점
+title: 프로 하스켈러 4개월차 | 하스켈의 단점
 author: hatemogi
 date: 2022년 8월 22일
 keywords: [haskell]
