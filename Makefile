@@ -1,4 +1,4 @@
-PANDOC=pandoc --data-dir=. --template=default.html --katex
+PANDOC=pandoc --data-dir=. --template=default.html --katex --highlight-style=kate
 
 all:
 	$(PANDOC) -s index.md -o docs/index.html
@@ -10,7 +10,11 @@ all:
 	$(PANDOC) -s note/amazon-eks-1.md -o docs/amazon-eks-1.html
 	cp docs/amazon-eks-1.html docs/amazon-eks.html
 	$(PANDOC) -s note/amazon-eks-2.md -o docs/amazon-eks-2.html
+	$(PANDOC) -s note/haskell-challenging.md -o docs/haskell-challenging.html
 	cp -r img/* docs/img/
+
+md: note/*.md
+	echo $@
 
 clean:
 	rm docs/intro.html
