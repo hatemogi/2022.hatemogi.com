@@ -8,12 +8,12 @@ description: 하스켈로 월급받는 개발자가 된지 벌써 4개월이 지
 
 하스켈로 백엔드 개발을 하며, 월급을 받는다는 의미로 "프로 하스켈러"가 되었다는 글을 몇 편 올렸습니다. 그동안 하스켈의 좋은 점들을 많이 나열했으니, 이번 한 편 정도는 단점도 적어보겠습니다.
 
-* [프로 하스켈러 1일차](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-1일차-d04fe4f10ec0)
-* [프로 하스켈러 2일차](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-2일차-db0f1e81e349)
-* [프로 하스켈러 3일차](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-3일차-176837a0133e)
-* [프로 하스켈러 4일차](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-4일차-bbe96f0e5746)
-* [프로 하스켈러 6주차](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-6주차-9c0180bf13d3)
-* [프로 하스켈러 8주차](<https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-8주차-98c55fd616e9)
+* [프로 하스켈러 1일차 - GHCup](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-1일차-d04fe4f10ec0)
+* [프로 하스켈러 2일차 - 이상적 프로그래밍 언어](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-2일차-db0f1e81e349)
+* [프로 하스켈러 3일차 - Functor, and ...](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-3일차-176837a0133e)
+* [프로 하스켈러 4일차 - Monad Transformers](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-4일차-bbe96f0e5746)
+* [프로 하스켈러 6주차 - Scotty Web Framework](https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-6주차-9c0180bf13d3)
+* [프로 하스켈러 8주차 - 함수형 프로그래밍과 명령형 프로그래밍](<https://medium.com/happyprogrammer-in-jeju/프로-하스켈러-8주차-98c55fd616e9)
 
 범용 프로그래밍 언어(General purpose programming language)의 특징을 갖춘 언어들은 언어의 기능 자체로는 서로 할 수 있는 일이 기본적으로 동일합니다만, 결국 그 언어를 활용해서 무언가를 만들 때 필요한 각종 편의 기능과 이용자 규모에 따른 라이브러리의 규모 측면에서 차이가 도드라지기도 합니다.
 
