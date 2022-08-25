@@ -11,6 +11,7 @@ all:
 	cp docs/amazon-eks-1.html docs/amazon-eks.html
 	$(PANDOC) -s note/amazon-eks-2.md -o docs/amazon-eks-2.html
 	$(PANDOC) -s note/haskell-challenging.md -o docs/haskell-challenging.html
+	$(PANDOC) -s note/salary-developer.md -o docs/salary-developer.html
 	cp -r img/* docs/img/
 
 md: note/*.md
