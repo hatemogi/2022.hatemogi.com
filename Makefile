@@ -12,6 +12,7 @@ all:
 	$(PANDOC) -s note/amazon-eks-2.md -o docs/amazon-eks-2.html
 	$(PANDOC) -s note/haskell-challenging.md -o docs/haskell-challenging.html
 	$(PANDOC) -s note/salary-developer.md -o docs/salary-developer.html
+	$(PANDOC) -s note/kube-update.md -o docs/kube-update.html
 	cp -r img/* docs/img/
 
 md: note/*.md

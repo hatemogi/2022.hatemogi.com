@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="hatemogi" />
+  <meta name="keywords" content="kubernetes update kustomization" />
+  <meta name="description" content="쿠버네티스에서 운영중인 서비스를 중단없이 업데이트하는 방법을 알아보겠습니다." />
+  <title>쿠버네티스 서비스 롤링 업데이트</title>
+  <link rel="shortcut icon" sizes="16x16 32x32 48x48 64x64 128x128 256x256" href="/favicon.ico">
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        background-color: #ffffff;
+        color: #a0a0a0;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+    div.sourceCode
+      { color: #1f1c1b; background-color: #ffffff; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #1f1c1b; } /* Normal */
+    code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+    code span.an { color: #ca60ca; } /* Annotation */
+    code span.at { color: #0057ae; } /* Attribute */
+    code span.bn { color: #b08000; } /* BaseN */
+    code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+    code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #924c9d; } /* Char */
+    code span.cn { color: #aa5500; } /* Constant */
+    code span.co { color: #898887; } /* Comment */
+    code span.cv { color: #0095ff; } /* CommentVar */
+    code span.do { color: #607880; } /* Documentation */
+    code span.dt { color: #0057ae; } /* DataType */
+    code span.dv { color: #b08000; } /* DecVal */
+    code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+    code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+    code span.fl { color: #b08000; } /* Float */
+    code span.fu { color: #644a9b; } /* Function */
+    code span.im { color: #ff5500; } /* Import */
+    code span.in { color: #b08000; } /* Information */
+    code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+    code span.op { color: #1f1c1b; } /* Operator */
+    code span.ot { color: #006e28; } /* Other */
+    code span.pp { color: #006e28; } /* Preprocessor */
+    code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+    code span.sc { color: #3daee9; } /* SpecialChar */
+    code span.ss { color: #ff5500; } /* SpecialString */
+    code span.st { color: #bf0303; } /* String */
+    code span.va { color: #0057ae; } /* Variable */
+    code span.vs { color: #bf0303; } /* VerbatimString */
+    code span.wa { color: #bf0303; } /* Warning */
+    h1, h2, h3, h4 {
+      font-family: sans-serif;
+    }
+    .sourceCode pre {
+      padding: 0.3rem;
+      border-radius: 0.2rem;
+      background-color: #efefef;
+    }
+  </style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FE8ZDRDPP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5FE8ZDRDPP');
+</script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">쿠버네티스 서비스 롤링 업데이트</h1>
+<p class="author">hatemogi</p>
+<p class="date">2022년 8월 30일</p>
+</header>
+<h2 id="클러스터-생성">클러스터 생성</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> eksctl create cluster <span class="at">--name</span> rolling <span class="at">--region</span> ap-northeast-2 <span class="at">--version</span> 1.23 <span class="at">--without-nodegroup</span> <span class="at">--fargate</span></span></code></pre></div>
+<p><code>rolling</code>이라는 클러스터를 서울리전에 만들었습니다.</p>
+<p>배포(deployment)를 만들 때, 도커 이미지명과 함께, 이미지 풀 정책을
+지정할 수 있습니다.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">풀 정책</th>
+<th style="text-align: left;">ImagePullPolicy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">IfNotPresent</td>
+<td style="text-align: left;">로컬에 이미지가 없을 때만 받아온다.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Always</td>
+<td style="text-align: left;">kubelet이 컨테이너를 실행할 때마다
+이미지를 받아온다. 이미지 다이제스트가 정확히 일치하지 않는 (로컬 캐시에
+없는) 이미지를 받아온다.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Never</td>
+<td style="text-align: left;">반드시 로컬에 이미지가 있어야 하는 상황을
+가정. 로컬에 해당 이미지가 없으면 컨테이너 실행 실패 처리.</td>
+</tr>
+</tbody>
+</table>
+<p>Always로 지정해도, 캐싱처리되기 때문에, 대부분의 경우는 Always로
+충분하겠습니다.</p>
+<h3 id="이미지-버전-지정하기">이미지 버전 지정하기</h3>
+<blockquote>
+<p>You should avoid using the :latest tag when deploying containers in
+production as it is harder to track which version of the image is
+running and more difficult to roll back properly.</p>
+<p>Instead, specify a meaningful tag such as v1.42.0.</p>
+</blockquote>
+<p>도커 이미지를 저장할 때는 latest같은 태그대신에 구체적인 버전을
+명시하는 것이 좋습니다.</p>
+<h2 id="롤링-업데이트-예제-1">롤링 업데이트 예제 (1)</h2>
+<p><a
+href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+class="uri">https://kubernetes.io/docs/concepts/workloads/controllers/deployment/</a></p>
+<h3 id="nginx-배포">nginx 배포</h3>
+<h4 id="배포-deployment.yaml">배포 – deployment.yaml</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl apply <span class="at">-f</span> deployment.yaml</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> nginx-deployment</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:1.14.2</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code></pre></div>
+<p><code>nginx-deployment</code>라는 이름으로
+<code>nginx:1.14.2</code>이미지 컨테이너 레플리카를 3개 만들겠다는
+배포입니다.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">항목</th>
+<th style="text-align: left;">값</th>
+<th style="text-align: left;">의미</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">metadata.name</td>
+<td style="text-align: left;">nginx-deployment</td>
+<td style="text-align: left;">deployment의 이름</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">spec.replicas</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Pod를 3개 띄우고자 한다</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">spec.selector.matchLabels</td>
+<td style="text-align: left;">nginx</td>
+<td style="text-align: left;">이 배포가 관리하는 Pod들을 찾는 방법</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nginx-배포-상태-확인">nginx 배포 상태 확인</h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span>  kubectl get deployments</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>               READY   UP-TO-DATE   AVAILABLE   AGE</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment</span>   3/3     3            3           5h24m</span></code></pre></div>
+<h4 id="nginx-배포-상세-확인">nginx 배포 상세 확인</h4>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> describe deployments nginx-deployment</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Name:</span>                   nginx-deployment</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Namespace:</span>              default</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">CreationTimestamp:</span>      Tue, 30 Aug 2022 11:53:38 +0900</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Labels:</span>                 app=nginx</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Annotations:</span>            deployment.kubernetes.io/revision: 4</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Selector:</span>               app=nginx</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Replicas:</span>               3 desired <span class="kw">|</span> <span class="ex">3</span> updated <span class="kw">|</span> <span class="ex">3</span> total <span class="kw">|</span> <span class="ex">3</span> available <span class="kw">|</span> <span class="ex">0</span> unavailable</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">StrategyType:</span>           RollingUpdate</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ex">MinReadySeconds:</span>        0</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">RollingUpdateStrategy:</span>  25% max unavailable, 25% max surge</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Pod</span> Template:</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Labels:</span>  app=nginx</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Containers:</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>   <span class="ex">nginx:</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Image:</span>        nginx:1.16.1</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Port:</span>         80/TCP</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Host</span> Port:    0/TCP</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Environment:</span>  <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Mounts:</span>       <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Volumes:</span>        <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Conditions:</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Type</span>           Status  Reason</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="ex">----</span>           <span class="at">------</span>  <span class="at">------</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Available</span>      True    MinimumReplicasAvailable</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Progressing</span>    True    NewReplicaSetAvailable</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="ex">OldReplicaSets:</span>  <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="ex">NewReplicaSet:</span>   nginx-deployment-ff6655784 <span class="er">(</span><span class="ex">3/3</span> replicas created<span class="kw">)</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="ex">Events:</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Type</span>    Reason             Age                  From                   Message</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="ex">----</span>    <span class="at">------</span>             <span class="at">----</span>                 <span class="at">----</span>                   <span class="at">-------</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>  ScalingReplicaSet  44m                  deployment-controller  Scaled up replica set nginx-deployment-9456bbbf9 to 1</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">주요 항목</th>
+<th style="text-align: left;">내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Replicas</td>
+<td style="text-align: left;">3 desired | 3 updated | 3 total | 3
+available | 0 unavailable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">StrategyType</td>
+<td style="text-align: left;">RollingUpdate</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nginx-배포된-pod들-확인">nginx 배포된 Pod들 확인</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get pods <span class="at">-l</span> app=nginx</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                               READY   STATUS    RESTARTS   AGE</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-2qq7z</span>   1/1     Running   0          5m28s</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-bz5r9</span>   1/1     Running   0          7m24s</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-nz7x8</span>   1/1     Running   0          6m26s</span></code></pre></div>
+<h4 id="특정-pod-상세-확인">특정 Pod 상세 확인</h4>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl describe pods nginx-deployment-9456bbbf9-2qq7z</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Name:</span>                 nginx-deployment-9456bbbf9-2qq7z</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Namespace:</span>            default</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Priority:</span>             2000001000</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Priority</span> Class Name:  system-node-critical</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Node:</span>                 fargate-ip-192-168-184-112.ap-northeast-2.compute.internal/192.168.184.112</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Start</span> Time:           Tue, 30 Aug 2022 17:10:43 +0900</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Labels:</span>               app=nginx</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">eks.amazonaws.com/fargate-profile=fp-default</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">pod-template-hash=9456bbbf9</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Annotations:</span>          CapacityProvisioned: 0.25vCPU 0.5GB</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">Logging:</span> LoggingDisabled: LOGGING_CONFIGMAP_NOT_FOUND</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">kubernetes.io/psp:</span> eks.privileged</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ex">Status:</span>               Running</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="ex">IP:</span>                   192.168.184.112</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ex">IPs:</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">IP:</span>           192.168.184.112</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Controlled</span> By:  ReplicaSet/nginx-deployment-9456bbbf9</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="ex">Containers:</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="ex">nginx:</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Container</span> ID:   containerd://9ff19d565d9d718302b8bd45d37a234ff1eb920cdf2fcdf3627710ad15ed6f60</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Image:</span>          nginx:1.14.2</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Image</span> ID:       docker.io/library/nginx@sha256:f7988fb6c02e0ce69257d9bd9cf37ae20a60f1df7563c3a2a6abe24160306b8d</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Port:</span>           80/TCP</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Host</span> Port:      0/TCP</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="ex">State:</span>          Running</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>      <span class="ex">Started:</span>      Tue, 30 Aug 2022 17:10:52 +0900</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Ready:</span>          True</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Restart</span> Count:  0</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Environment:</span>    <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Mounts:</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>      <span class="ex">/var/run/secrets/kubernetes.io/serviceaccount</span> from kube-api-access-mvrl6 <span class="er">(</span><span class="ex">ro</span><span class="kw">)</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="ex">Conditions:</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Type</span>              Status</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Initialized</span>       True</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Ready</span>             True</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ContainersReady</span>   True</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>  <span class="ex">PodScheduled</span>      True</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="ex">Volumes:</span></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  <span class="ex">kube-api-access-mvrl6:</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Type:</span>                    Projected <span class="er">(</span><span class="ex">a</span> volume that contains injected data from multiple sources<span class="kw">)</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    <span class="ex">TokenExpirationSeconds:</span>  3607</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ConfigMapName:</span>           kube-root-ca.crt</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ConfigMapOptional:</span>       <span class="op">&lt;</span>nil<span class="op">&gt;</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DownwardAPI:</span>             true</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="ex">QoS</span> Class:                   BestEffort</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="ex">Node-Selectors:</span>              <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="ex">Tolerations:</span>                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">node.kubernetes.io/unreachable:NoExecute</span> op=Exists for 300s</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a><span class="ex">Events:</span></span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Type</span>     Reason           Age    From               Message</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>  <span class="ex">----</span>     <span class="at">------</span>           <span class="at">----</span>   <span class="at">----</span>               <span class="at">-------</span></span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Warning</span>  LoggingDisabled  10m    fargate-scheduler  Disabled logging because aws-logging configmap was not found. configmap <span class="st">&quot;aws-logging&quot;</span> not found</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Scheduled        9m22s  fargate-scheduler  Successfully assigned default/nginx-deployment-9456bbbf9-2qq7z to fargate-ip-192-168-184-112.ap-northeast-2.compute.internal</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Pulling          9m22s  kubelet            Pulling image <span class="st">&quot;nginx:1.14.2&quot;</span></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Pulled           9m14s  kubelet            Successfully pulled image <span class="st">&quot;nginx:1.14.2&quot;</span> in 7.582622606s</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Created          9m14s  kubelet            Created container nginx</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Started          9m14s  kubelet            Started container nginx</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">주요 항목</th>
+<th style="text-align: left;">내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Image</td>
+<td style="text-align: left;">nginx:1.14.2</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nginx-이미지-업데이트">nginx 이미지 업데이트</h4>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">deployment.apps/nginx-deployment</span> image updated</span></code></pre></div>
+<h4 id="업데이트-요청-후-파드-상태-확인">업데이트 요청 후 파드 상태
+확인</h4>
+<ol type="1">
+<li>기존 버전 패드 3개가 유지된 상태에서, 새 버전의 파드가 하나 생성되어
+<code>Pending</code>상태</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get pods <span class="at">-l</span> app=nginx</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                               READY   STATUS    RESTARTS   AGE</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-2qq7z</span>   1/1     Running   0          13m</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-bz5r9</span>   1/1     Running   0          15m</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-nz7x8</span>   1/1     Running   0          14m</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-4vqrb</span>   0/1     Pending   0          45s</span></code></pre></div>
+<ol start="2" type="1">
+<li>Pending상태였던 새 버전 파드가 Running상태로 바뀌고, 기존 버전 Pod가
+하나 사라지고, 새버전 파드가 하나더 생기면서 <code>Pending</code> 상태.
+즉, 2개가 기존 버전, 1개가 새버전인 상태.</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get pods <span class="at">-l</span> app=nginx</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                               READY   STATUS    RESTARTS   AGE</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-2qq7z</span>   1/1     Running   0          13m</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-nz7x8</span>   1/1     Running   0          14m</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-4vqrb</span>   1/1     Running   0          63s</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-cfqk6</span>   0/1     Pending   0          2s</span></code></pre></div>
+<ol start="3" type="1">
+<li>차례로 같은 과정이 반복되어, 이제 마지막 세번째 신규 파드가
+<code>ContainerCreating</code>상태.</li>
+</ol>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get pods <span class="at">-l</span> app=nginx</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                               READY   STATUS              RESTARTS   AGE</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-9456bbbf9-2qq7z</span>   1/1     Running             0          15m</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-46q6b</span>   0/1     ContainerCreating   0          62s</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-4vqrb</span>   1/1     Running             0          3m4s</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-cfqk6</span>   1/1     Running             0          2m3s</span></code></pre></div>
+<ol start="4" type="1">
+<li>세번째 파드까지 <code>Running</code> 상태가 되면, 기존 버전의
+파드들은 모두 종료된 상태.</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl get pods <span class="at">-l</span> app=nginx</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                               READY   STATUS    RESTARTS   AGE</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-46q6b</span>   1/1     Running   0          65s</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-4vqrb</span>   1/1     Running   0          3m7s</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx-deployment-ff6655784-cfqk6</span>   1/1     Running   0          2m6s</span></code></pre></div>
+<h4 id="업데이트된-파드-확인">업데이트된 파드 확인</h4>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl describe pods nginx-deployment-ff6655784-46q6b</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Name:</span>                 nginx-deployment-ff6655784-46q6b</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Namespace:</span>            default</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Priority:</span>             2000001000</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Priority</span> Class Name:  system-node-critical</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Node:</span>                 fargate-ip-192-168-176-170.ap-northeast-2.compute.internal/192.168.176.170</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Start</span> Time:           Tue, 30 Aug 2022 17:25:20 +0900</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Labels:</span>               app=nginx</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">eks.amazonaws.com/fargate-profile=fp-default</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">pod-template-hash=ff6655784</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Annotations:</span>          CapacityProvisioned: 0.25vCPU 0.5GB</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">Logging:</span> LoggingDisabled: LOGGING_CONFIGMAP_NOT_FOUND</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                      <span class="ex">kubernetes.io/psp:</span> eks.privileged</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="ex">Status:</span>               Running</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="ex">IP:</span>                   192.168.176.170</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="ex">IPs:</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">IP:</span>           192.168.176.170</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Controlled</span> By:  ReplicaSet/nginx-deployment-ff6655784</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="ex">Containers:</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="ex">nginx:</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Container</span> ID:   containerd://0a7443a87250457095679281f0c8bd1ca495ff9f1bfb84524fb16d20a7151e53</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Image:</span>          nginx:1.16.1</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Image</span> ID:       docker.io/library/nginx@sha256:d20aa6d1cae56fd17cd458f4807e0de462caf2336f0b70b5eeb69fcaaf30dd9c</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Port:</span>           80/TCP</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Host</span> Port:      0/TCP</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="ex">State:</span>          Running</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>      <span class="ex">Started:</span>      Tue, 30 Aug 2022 17:25:30 +0900</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Ready:</span>          True</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Restart</span> Count:  0</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Environment:</span>    <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Mounts:</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>      <span class="ex">/var/run/secrets/kubernetes.io/serviceaccount</span> from kube-api-access-542mb <span class="er">(</span><span class="ex">ro</span><span class="kw">)</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="ex">Conditions:</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Type</span>              Status</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Initialized</span>       True</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Ready</span>             True</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ContainersReady</span>   True</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>  <span class="ex">PodScheduled</span>      True</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="ex">Volumes:</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>  <span class="ex">kube-api-access-542mb:</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Type:</span>                    Projected <span class="er">(</span><span class="ex">a</span> volume that contains injected data from multiple sources<span class="kw">)</span></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    <span class="ex">TokenExpirationSeconds:</span>  3607</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ConfigMapName:</span>           kube-root-ca.crt</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ConfigMapOptional:</span>       <span class="op">&lt;</span>nil<span class="op">&gt;</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DownwardAPI:</span>             true</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="ex">QoS</span> Class:                   BestEffort</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="ex">Node-Selectors:</span>              <span class="op">&lt;</span>none<span class="op">&gt;</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a><span class="ex">Tolerations:</span>                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">node.kubernetes.io/unreachable:NoExecute</span> op=Exists for 300s</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="ex">Events:</span></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Type</span>     Reason           Age    From               Message</span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>  <span class="ex">----</span>     <span class="at">------</span>           <span class="at">----</span>   <span class="at">----</span>               <span class="at">-------</span></span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Warning</span>  LoggingDisabled  9m9s   fargate-scheduler  Disabled logging because aws-logging configmap was not found. configmap <span class="st">&quot;aws-logging&quot;</span> not found</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Scheduled        8m17s  fargate-scheduler  Successfully assigned default/nginx-deployment-ff6655784-46q6b to fargate-ip-192-168-176-170.ap-northeast-2.compute.internal</span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Pulling          8m17s  kubelet            Pulling image <span class="st">&quot;nginx:1.16.1&quot;</span></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Pulled           8m9s   kubelet            Successfully pulled image <span class="st">&quot;nginx:1.16.1&quot;</span> in 8.052819924s</span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Created          8m8s   kubelet            Created container nginx</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Normal</span>   Started          8m8s   kubelet            Started container nginx</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">주요 항목</th>
+<th style="text-align: left;">내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Image</td>
+<td style="text-align: left;">nginx:1.16.1</td>
+</tr>
+</tbody>
+</table>
+<h4 id="롤링-업데이트-커맨드-요약">롤링 업데이트 커맨드 요약</h4>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1</span></code></pre></div>
+<p><code>kubectl set image</code> 명령어로 배포된 Deployment의 이미지
+버전을 바꾸면, 쿠버네티스가 롤링 업데이트를 진행한다.</p>
+<h3 id="추가로-활용할만한-명령어">추가로 활용할만한 명령어</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kubectl edit deployment/nginx-deployment</span></code></pre></div>
+<p><code>kubectl edit</code> 명령어로, 현재 배포된 deployment를 편집할
+수 있다. <code>kubectl set image</code> 같은 명령어를 이용해서,
+deployment.yaml 파일과 다른 상태라 하더라도 현 배포상태에서 추가로
+편집할 수 있다.</p>
+<h2 id="그래서-자동-배포-업데이트를-한다면">그래서, 자동 배포 업데이트를
+한다면…</h2>
+<h3 id="도커이미지-빌드시-버전을-구체적으로-태그한다">1. 도커이미지
+빌드시, 버전을 구체적으로 태그한다</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> SHA_SHORT 환경 변수 설정</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">  run</span><span class="kw">: </span><span class="ch">|-</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    echo &quot;SHA_SHORT=$(git rev-parse --short HEAD)&quot; &gt;&gt; $GITHUB_ENV</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> 도커 이미지 이름 설정</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">  run</span><span class="kw">: </span><span class="ch">|-</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    echo &quot;IMAGE=repository-url.io/openapi:${{ env.SHA_SHORT }}&quot; &gt;&gt; $GITHUB_ENV</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Mutation 도커 이미지 빌드</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> docker build --target openapi -t ${{ env.IMAGE }} .</span></span></code></pre></div>
+<h3 id="해당-도커-이미지를-저장소에-푸시한다.">2. 해당 도커 이미지를
+저장소에 푸시한다.</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> 도커 이미지 푸시</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> docker push ${{ env.IMAGE }}</span></span></code></pre></div>
+<h3 id="쿠버네티스에-롤링-업데이트를-요청한다.">3. 쿠버네티스에 롤링
+업데이트를 요청한다.</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> 쿠버네티스 이미지 업데이트</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> kubectl set image deployment/배포이름 openapi=${{ env.IMAGE}}</span></span></code></pre></div>
+<h2 id="요약">요약</h2>
+<p>쿠버네티스의 Deployment에 있는 이미지를 변경 요청하면, 롤링
+업데이트를 진행하게 된다. 새버전을 배포하려면, 이미지 저장소에, 새버전의
+이미지를 푸시한 다음, 이미지 변경 요청을 하자.</p>
+</body>
+</html>
